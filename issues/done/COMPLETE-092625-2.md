@@ -4,8 +4,8 @@
 **Component**: Backend / FastAPI  
 **Beta Blocker**: Yes (backend needed for app data)  
 **Discovered**: 2025-09-26  
-**Status**: New  
-**Resolved**: 
+**Status**: RESOLVED  
+**Resolved**: 2025-09-26
 
 ## Problem Description
 
@@ -34,11 +34,11 @@ Running the app locally serves `/health` returning a JSON status. The app loads 
 
 ## Solution Implemented
 
-### 1. App Factory and Settings (⏳ In Progress)
+### 1. App Factory and Settings (✅ Complete)
 - Create `backend/app/core/config.py` with Pydantic settings.  
 - Create `backend/app/main.py` with `create_app()` and `/health`.  
 
-### 2. Server Entrypoints (⏳ In Progress)
+### 2. Server Entrypoints (✅ Complete)
 - Uvicorn dev server script.  
 - Gunicorn config for production readiness (later used by Docker).  
 
@@ -55,6 +55,9 @@ No backend scaffold exists.
 ```text
 backend/app/main.py
 backend/app/core/config.py
+backend/app/__init__.py
+backend/dev.sh
+backend/gunicorn_conf.py
 requirements.txt
 ```
 
@@ -65,31 +68,31 @@ requirements.txt
 2. GET `/health` returns `{"status":"ok"}`.  
 
 ### Test Scenarios
-- [ ] Health endpoint returns 200 and correct payload  
-- [ ] App loads settings from env without error  
+- [x] Health endpoint returns 200 and correct payload  
+- [x] App loads settings from env without error  
 
 ## Status
 
-**Current Status**: Planned  
+**Current Status**: RESOLVED  
 **Last Updated**: 2025-09-26
 
 ### Implementation Checklist
-- [ ] Create app factory  
-- [ ] Add `/health` route  
-- [ ] Add settings via Pydantic  
-- [ ] Pin Python 3.11 and base requirements  
+- [x] Create app factory  
+- [x] Add `/health` route  
+- [x] Add settings via Pydantic  
+- [x] Pin Python 3.11 and base requirements  
 
 ### Completion Criteria (Ready for User Testing)
-- [ ] App starts locally via Uvicorn  
-- [ ] `/health` returns OK  
-- [ ] Settings load from `.env`  
-- [ ] Ready for user testing  
-- [ ] Blockers documented  
+- [x] App starts locally via Uvicorn  
+- [x] `/health` returns OK  
+- [x] Settings load from `.env`  
+- [x] Ready for user testing  
+- [x] Blockers documented  
 
 ### User Testing Confirmation
-- [ ] User can run the server locally  
-- [ ] User confirms `/health` works  
-- [ ] User approves moving to done/complete  
+- [x] User can run the server locally  
+- [x] User confirms `/health` works  
+- [x] User approves moving to done/complete  
 
 ## Result
 
@@ -107,5 +110,4 @@ Backend scaffold exists with a health endpoint and typed settings; ready to inte
 
 - App factory and health route implemented.  
 - Settings wired to env.  
-- User confirms local run and endpoint behavior.  
-
+- User confirms local run and endpoint behavior.
