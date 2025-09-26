@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		114E19F7F943E50C372300BC /* Odds.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E90BC40C9A93EA747B4852 /* Odds.swift */; };
+		1A70C9666685A494FE9494F5 /* AllSportsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A870301211DD51E548E188 /* AllSportsViewModel.swift */; };
 		2BFBE6A72AD358624DE8049B /* GolfView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC9203D9984232CCE8F3DA0 /* GolfView.swift */; };
 		61CBA6A22E4C193063EC6E56 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A8297E4F09F677878A7946 /* SettingsView.swift */; };
 		888F5D001BF2B7D523A91251 /* PolymarketEdgeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C395A73C9B6AA3734967915 /* PolymarketEdgeApp.swift */; };
@@ -25,6 +26,7 @@
 		9337DF9C92C140D056F06601 /* PolymarketEdge.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PolymarketEdge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1A8297E4F09F677878A7946 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E1E90BC40C9A93EA747B4852 /* Odds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Odds.swift; sourceTree = "<group>"; };
+		E5A870301211DD51E548E188 /* AllSportsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSportsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -40,6 +42,7 @@
 			isa = PBXGroup;
 			children = (
 				284257E899772476A5D2CF4D /* AllSportsView.swift */,
+				E5A870301211DD51E548E188 /* AllSportsViewModel.swift */,
 			);
 			path = AllSports;
 			sourceTree = "<group>";
@@ -159,6 +162,7 @@
 			files = (
 				F68C865C2C76DAC2D063F41F /* APIClient.swift in Sources */,
 				E4231F2806C021C5D79DF41B /* AllSportsView.swift in Sources */,
+				1A70C9666685A494FE9494F5 /* AllSportsViewModel.swift in Sources */,
 				2BFBE6A72AD358624DE8049B /* GolfView.swift in Sources */,
 				114E19F7F943E50C372300BC /* Odds.swift in Sources */,
 				FB1DAAE4A5BCDFA9DE90C398 /* Opportunity.swift in Sources */,

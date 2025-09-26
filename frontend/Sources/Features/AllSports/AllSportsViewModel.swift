@@ -7,7 +7,7 @@ final class AllSportsViewModel: ObservableObject {
     @Published var errorMessage: String?
 
     @Published var selectedSport: String? = nil // nil = All
-    @Published var minEVPercent: Double = 0 // e.g., 5 means 5%
+    @Published var minEVPercent: Double = 0 // 0 disables EV filtering in beta
 
     @Published var visibleCount: Int = 50
 
@@ -25,9 +25,10 @@ final class AllSportsViewModel: ObservableObject {
     var filteredSorted: [Opportunity] {
         let threshold = minEVPercent / 100.0
         let sportFilter = selectedSport == nil || selectedSport == "All" ? nil : selectedSport
+        let shouldFilterEV = threshold > 0
         let filtered = allOpportunities.filter { opp in
             let sportOk = sportFilter == nil ? true : (opp.sport == sportFilter!)
-            let evOk = (opp.ev_percent ?? -Double.infinity) >= threshold
+            let evOk = !shouldFilterEV || ((opp.ev_percent ?? -Double.infinity) >= threshold)
             return sportOk && evOk
         }
         .sorted { (lhs, rhs) in

@@ -45,7 +45,7 @@ struct AllSportsView: View {
                         get: { vm.selectedSport ?? "All" },
                         set: { vm.selectedSport = $0 == "All" ? nil : $0 }
                     )) {
-                        ForEach(vm.availableSports, id: \ .self) { s in
+                        ForEach(vm.availableSports, id: \.self) { s in
                             Text(s)
                         }
                     }
