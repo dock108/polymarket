@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AllSportsView: View {
     @StateObject private var vm = AllSportsViewModel()
+    @ObservedObject private var settings = SettingsStore.shared
 
     var body: some View {
         NavigationView {
@@ -34,6 +35,38 @@ struct AllSportsView: View {
                                 }
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
+
+                                if settings.developerMode {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        HStack {
+                                            Text("Sport:")
+                                            Text(opp.sport ?? "-")
+                                        }
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+
+                                        HStack {
+                                            Text("Source:")
+                                            Text(opp.source)
+                                        }
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+
+                                        HStack {
+                                            Text("IDs:")
+                                            Text("event=\(opp.event_id ?? "-") market=\(opp.market_id ?? "-")")
+                                        }
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+
+                                        HStack {
+                                            Text("Updated:")
+                                            Text(Formatters.isoDateTime(opp.updated_at))
+                                        }
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                    }
+                                }
                             }
                         }
                         .onAppear { vm.loadMoreIfNeeded(currentItem: opp) }
