@@ -17,5 +17,10 @@ class Settings(BaseSettings):
     fee_cushion: float = Field(default=0.025, alias="FEE_CUSHION", ge=0.0, le=0.10)
     refresh_interval_seconds: int = Field(default=600, alias="REFRESH_INTERVAL_SECONDS", ge=60, le=3600)
 
+    polymarket_base_url: str = Field(
+        default="https://gamma-api.polymarket.com",
+        alias="POLYMARKET_BASE_URL",
+    )
+
 
 settings = Settings()

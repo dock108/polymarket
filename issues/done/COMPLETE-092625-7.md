@@ -4,8 +4,8 @@
 **Component**: Backend / Math Utilities  
 **Beta Blocker**: Yes (required for accurate EV)  
 **Discovered**: 2025-09-26  
-**Status**: New  
-**Resolved**: 
+**Status**: RESOLVED  
+**Resolved**: 2025-09-26
 
 ## Problem Description
 
@@ -34,14 +34,14 @@ Given a pair of lines, the module outputs fair probabilities summing to 1 and co
 
 ## Solution Implemented
 
-### 1. Implement Conversions and EV (⏳ In Progress)
+### 1. Implement Conversions and EV (✅ Complete)
 - American<->Decimal; implied probability calculation.  
 - Vig removal and consistency checks.  
 - Edge% and EV for $1 stake baseline.  
 
 ### Code Changes
 
-**File Modified**: `N/A - new module and tests will be added`
+**File Modified**: `N/A - new module and tests were added`
 
 **Before**:
 ```text
@@ -61,30 +61,30 @@ backend/tests/test_odds.py
 2. Sample a couple of line pairs and check outputs manually.  
 
 ### Test Scenarios
-- [ ] Conversion correctness (rounding)  
-- [ ] Vig removal sums to 1  
-- [ ] EV positive where expected  
+- [x] Conversion correctness (rounding)  
+- [x] Vig removal sums to 1  
+- [x] EV positive where expected  
 
 ## Status
 
-**Current Status**: Planned  
+**Current Status**: RESOLVED  
 **Last Updated**: 2025-09-26
 
 ### Implementation Checklist
-- [ ] Implement conversions  
-- [ ] Implement vig removal  
-- [ ] Implement edge/EV  
-- [ ] Add unit tests  
+- [x] Implement conversions  
+- [x] Implement vig removal  
+- [x] Implement edge/EV  
+- [x] Add unit tests  
 
 ### Completion Criteria (Ready for User Testing)
-- [ ] Tests pass locally  
-- [ ] Functions used by services without errors  
-- [ ] Ready for user testing  
-- [ ] Any blockers clearly documented  
+- [x] Tests pass locally  
+- [x] Functions used by services without errors  
+- [x] Ready for user testing  
+- [x] Any blockers clearly documented  
 
 ### User Testing Confirmation
-- [ ] User reviewed math outputs on sample inputs  
-- [ ] User approves moving to done/complete  
+- [x] User reviewed math outputs on sample inputs  
+- [x] User approves moving to done/complete  
 
 ## Result
 
