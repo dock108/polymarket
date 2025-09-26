@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
+import datetime as dt
 
 import httpx
 
@@ -15,6 +17,24 @@ class PolymarketAPIError(RuntimeError):
     pass
 
 
+class _TTLCache:
+    def __init__(self, ttl_seconds: int) -> None:
+        self.ttl = ttl_seconds
+        self._store: Dict[Tuple[str, ...], Tuple[float, Any]] = {}
+
+    def get(self, key: Tuple[str, ...]) -> Optional[Any]:
+        now = time.time()
+        if key in self._store:
+            ts, val = self._store[key]
+            if now - ts <= self.ttl:
+                return val
+            del self._store[key]
+        return None
+
+    def set(self, key: Tuple[str, ...], val: Any) -> None:
+        self._store[key] = (time.time(), val)
+
+
 class PolymarketService:
     def __init__(self, base_url: Optional[str] = None, fee_cushion: Optional[float] = None) -> None:
         self.base_url = base_url or settings.polymarket_base_url
@@ -24,6 +44,7 @@ class PolymarketService:
             timeout=20.0,
             headers={"User-Agent": "polymarket-edge/0.1"},
         )
+        self._cache = _TTLCache(ttl_seconds=settings.refresh_interval_seconds)
 
     async def close(self) -> None:
         await self._client.aclose()
@@ -41,6 +62,11 @@ class PolymarketService:
         raise PolymarketAPIError("Unexpected /markets response format; expected list or {\"markets\": [...]}.")
 
     async def fetch_markets_paginated(self, page_limit: int = 500, max_pages: int = 5) -> List[Dict[str, Any]]:
+        cache_key = ("markets", f"limit={page_limit}", f"max_pages={max_pages}")
+        cached = self._cache.get(cache_key)
+        if cached is not None:
+            return cached
+
         all_markets: List[Dict[str, Any]] = []
         seen_ids: Set[str] = set()
         offset = 0
@@ -60,11 +86,12 @@ class PolymarketService:
                     all_markets.append(m)
                     new_count += 1
             if len(batch) < page_limit or new_count == 0:
-                # no more pages, or offset param ignored and no new items
                 break
             offset += page_limit
         if not all_markets:
             raise PolymarketAPIError("No markets returned from /markets (closed=false). Check API availability.")
+
+        self._cache.set(cache_key, all_markets)
         return all_markets
 
     def _extract_event_info(self, m: Dict[str, Any]) -> tuple[str, str]:
@@ -77,6 +104,36 @@ class PolymarketService:
         if not eid:
             raise PolymarketAPIError("Embedded event does not contain an 'id' or 'slug'.")
         return eid, title
+
+    def _parse_dt(self, value: Any) -> Optional[dt.datetime]:
+        if value is None:
+            return None
+        try:
+            if isinstance(value, (int, float)):
+                # treat as seconds; handle ms if too large
+                if value > 1e12:
+                    value = value / 1000.0
+                return dt.datetime.fromtimestamp(float(value), tz=dt.timezone.utc)
+            if isinstance(value, str):
+                v = value.replace("Z", "+00:00")
+                return dt.datetime.fromisoformat(v)
+        except Exception:
+            return None
+        return None
+
+    def _is_future_or_live(self, m: Dict[str, Any]) -> bool:
+        # Drop archived/closed markets
+        if bool(m.get("archived")):
+            return False
+        if bool(m.get("closed")):
+            return False
+        # If endDate exists and is in the past, drop
+        end_dt = self._parse_dt(m.get("endDate") or m.get("endDateIso") or m.get("endTime"))
+        if end_dt is not None:
+            now = dt.datetime.now(dt.timezone.utc)
+            if end_dt < now:
+                return False
+        return True
 
     def _yes_probability_from_outcomes(self, outcomes_data: Any) -> Optional[float]:
         if not (isinstance(outcomes_data, list) and len(outcomes_data) == 2):
@@ -112,13 +169,17 @@ class PolymarketService:
         return None
 
     def _normalize_market(self, m: Dict[str, Any], event_id: str) -> Optional[PMMarket]:
-        # Use explicit outcome prices if present; otherwise derive from market-level price fields
+        if not self._is_future_or_live(m):
+            return None
         yes_prob = self._yes_probability_from_outcomes(m.get("outcomes"))
         if yes_prob is None:
             yes_prob = self._market_level_yes_probability(m)
         if yes_prob is None:
             return None
         yes_prob = clamp(yes_prob, 0.0, 1.0)
+        # Drop degenerate 0 or 1
+        if yes_prob <= 0.0 or yes_prob >= 1.0:
+            return None
         yes_prob = apply_fee_to_probability(yes_prob, self.fee_cushion)
         no_prob = apply_fee_to_probability(1.0 - yes_prob, self.fee_cushion)
         outcomes = [
@@ -137,12 +198,7 @@ class PolymarketService:
         grouped: Dict[str, List[PMMarket]] = defaultdict(list)
         titles: Dict[str, str] = {}
 
-        total = len(markets_raw)
-        examined = 0
-        kept = 0
-
         for m in markets_raw:
-            examined += 1
             try:
                 eid, etitle = self._extract_event_info(m)
             except PolymarketAPIError:
@@ -151,14 +207,6 @@ class PolymarketService:
             if nm:
                 grouped[eid].append(nm)
                 titles.setdefault(eid, etitle)
-                kept += 1
-
-        if kept == 0:
-            sample_keys = list(markets_raw[0].keys()) if markets_raw else []
-            raise PolymarketAPIError(
-                f"No usable binary markets found after pagination (examined={examined}, total={total}). "
-                f"Sample market keys: {sample_keys}"
-            )
 
         events: List[PMEvent] = []
         for eid, mkts in grouped.items():

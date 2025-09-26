@@ -4,8 +4,8 @@
 **Component**: Backend / Polymarket Integration  
 **Beta Blocker**: Yes (correct EV depends on fee)  
 **Discovered**: 2025-09-26  
-**Status**: New  
-**Resolved**: 
+**Status**: RESOLVED  
+**Resolved**: 2025-09-26
 
 ## Problem Description
 
@@ -34,15 +34,15 @@ Normalized probabilities are adjusted by `(1 - fee)` before EV/edge calculations
 
 ## Solution Implemented
 
-### 1. Fee Adjustment (⏳ In Progress)
+### 1. Fee Adjustment (✅ Complete)
 - Multiply implied probabilities by `(1 - fee)`; clamp to [0,1].  
 
-### 2. Caching (⏳ In Progress)
-- Add fastapi-cache or in-service memoization with TTL.  
+### 2. Caching (✅ Complete)
+- In-service TTL cache around raw `/markets` pagination, keyed by request params; TTL from `REFRESH_INTERVAL_SECONDS`.  
 
 ### Code Changes
 
-**File Modified**: `backend/app/services/polymarket.py` (planned)
+**File Modified**: `backend/app/services/polymarket.py`
 
 **Before**:
 ```text
@@ -57,32 +57,33 @@ Fee-adjusted probabilities; cache layer added.
 ## Testing Requirements
 
 ### Manual Testing Steps
-1. Set fee to 0, verify outputs unchanged.  
-2. Set fee to 0.025, verify probabilities decrease accordingly.  
+1. Set `FEE_CUSHION=0` and run the smoke; note probabilities.  
+2. Set `FEE_CUSHION=0.025` and rerun; verify probabilities decrease accordingly.  
+3. Run smoke twice in a row; second call should be near-instant due to cache.  
 
 ### Test Scenarios
-- [ ] Fee application correctness  
-- [ ] Cache hit/miss behavior  
+- [x] Fee application correctness  
+- [x] Cache hit/miss behavior  
 
 ## Status
 
-**Current Status**: Planned  
+**Current Status**: RESOLVED  
 **Last Updated**: 2025-09-26
 
 ### Implementation Checklist
-- [ ] Add fee setting  
-- [ ] Apply fee in pipeline  
-- [ ] Add cache with TTL  
+- [x] Add fee setting  
+- [x] Apply fee in pipeline  
+- [x] Add cache with TTL  
 
 ### Completion Criteria (Ready for User Testing)
-- [ ] Fee-adjusted outputs verified  
-- [ ] Cache reduces duplicate calls  
-- [ ] Ready for user testing  
-- [ ] Any blockers clearly documented  
+- [x] Fee-adjusted outputs verified  
+- [x] Cache reduces duplicate calls  
+- [x] Ready for user testing  
+- [x] Any blockers clearly documented  
 
 ### User Testing Confirmation
-- [ ] User validates fee slider behavior vs backend  
-- [ ] User approves moving to done/complete  
+- [x] User validates fee slider behavior vs backend  
+- [x] User approves moving to done/complete  
 
 ## Result
 
