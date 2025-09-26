@@ -39,5 +39,11 @@ class Settings(BaseSettings):
         alias="ODDS_API_BOOKMAKERS",
     )
 
+    # DataGolf
+    datagolf_base_url: str = Field(
+        default="https://feeds.datagolf.com",
+        alias="DATAGOLF_BASE_URL",
+    )
+
 
 settings = Settings()
