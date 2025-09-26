@@ -1,0 +1,25 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.coverage*
+htmlcov/
+
+# iOS / Xcode
+DerivedData/
+xcuserdata/
+
+# Node/General
+node_modules/
+
+# Local env and data
+.env
+.env.*
+!.env.example
+data/
+logs/

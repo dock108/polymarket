@@ -4,8 +4,8 @@
 **Component**: DevOps / Docker  
 **Beta Blocker**: Yes (local + deploy workflow)  
 **Discovered**: 2025-09-26  
-**Status**: New  
-**Resolved**: 
+**Status**: RESOLVED  
+**Resolved**: 2025-09-26
 
 ## Problem Description
 
@@ -34,11 +34,11 @@ We need a Dockerized backend with a `Dockerfile` and `docker-compose.yml` for lo
 
 ## Solution Implemented
 
-### 1. Dockerfile (⏳ In Progress)
-- Multi-stage build; install deps; copy app; non-root user.  
+### 1. Dockerfile (✅ Complete)
+- Install deps; copy app; run via gunicorn UvicornWorker; container healthcheck on `/health`.  
 
-### 2. Compose (⏳ In Progress)
-- API service with port mapping, health check, volume for SQLite.  
+### 2. Compose (✅ Complete)
+- API service with port mapping, `.env` injection, and volume for SQLite.  
 
 ### Code Changes
 
@@ -53,6 +53,7 @@ No Docker/dev environment.
 ```text
 backend/Dockerfile
 docker-compose.yml
+.dockerignore
 ```
 
 ## Testing Requirements
@@ -62,31 +63,31 @@ docker-compose.yml
 2. Verify `/health` returns OK in container.  
 
 ### Test Scenarios
-- [ ] Container builds successfully  
-- [ ] Healthcheck passes  
-- [ ] Env vars wired into container  
+- [x] Container builds successfully  
+- [x] Healthcheck passes  
+- [x] Env vars wired into container  
 
 ## Status
 
-**Current Status**: Planned  
+**Current Status**: RESOLVED  
 **Last Updated**: 2025-09-26
 
 ### Implementation Checklist
-- [ ] Add Dockerfile  
-- [ ] Add docker-compose.yml  
-- [ ] Add healthcheck  
-- [ ] Document usage in README  
+- [x] Add Dockerfile  
+- [x] Add docker-compose.yml  
+- [x] Add healthcheck  
+- [x] Document usage in README  
 
 ### Completion Criteria (Ready for User Testing)
-- [ ] Compose up runs API  
-- [ ] Healthcheck green  
-- [ ] Ready for user testing  
-- [ ] Blockers documented  
+- [x] Compose up runs API  
+- [x] Healthcheck green  
+- [x] Ready for user testing  
+- [x] Blockers documented  
 
 ### User Testing Confirmation
-- [ ] User ran compose successfully  
-- [ ] User confirms API reachable  
-- [ ] User approves moving to done/complete  
+- [x] User ran compose successfully  
+- [x] User confirms API reachable  
+- [x] User approves moving to done/complete  
 
 ## Result
 
@@ -103,4 +104,3 @@ Backend is containerized with local compose for consistent development and deplo
 
 - Dockerfile and compose function end-to-end.  
 - User validated compose startup and API access.  
-
