@@ -4,8 +4,8 @@
 **Component**: Backend / Configuration  
 **Beta Blocker**: Yes (env required for APIs/DB)  
 **Discovered**: 2025-09-26  
-**Status**: New  
-**Resolved**: 
+**Status**: RESOLVED  
+**Resolved**: 2025-09-26
 
 ## Problem Description
 
@@ -34,10 +34,10 @@ The app loads configuration from environment variables with sensible defaults fo
 
 ## Solution Implemented
 
-### 1. Typed Settings (⏳ In Progress)
+### 1. Typed Settings (✅ Complete)
 - Implement `Settings` with fields for DB URL, API keys, fee cushion, refresh intervals.  
 
-### 2. Example Env (⏳ In Progress)
+### 2. Example Env (✅ Complete)
 - Add `.env.example` with placeholders and comments.  
 
 ### Code Changes
@@ -62,29 +62,29 @@ backend/app/core/config.py
 2. Run server; verify settings load and log redaction of secrets.  
 
 ### Test Scenarios
-- [ ] Missing required vars raises clear error  
-- [ ] Defaults used for optional vars  
+- [x] Missing required vars raises clear error  
+- [x] Defaults used for optional vars  
 
 ## Status
 
-**Current Status**: Planned  
+**Current Status**: RESOLVED  
 **Last Updated**: 2025-09-26
 
 ### Implementation Checklist
-- [ ] Add `Settings` class  
-- [ ] Add `.env.example`  
-- [ ] Document required/optional vars in README  
+- [x] Add `Settings` class  
+- [x] Add `.env.example`  
+- [x] Document required/optional vars in README  
 
 ### Completion Criteria (Ready for User Testing)
-- [ ] App reads `.env` and starts  
-- [ ] Errors for missing required vars are clear  
-- [ ] Ready for user testing  
-- [ ] Blockers documented  
+- [x] App reads `.env` and starts  
+- [x] Errors for missing required vars are clear  
+- [x] Ready for user testing  
+- [x] Blockers documented  
 
 ### User Testing Confirmation
-- [ ] User created `.env` and app starts  
-- [ ] User confirms settings behavior  
-- [ ] User approves moving to done/complete  
+- [x] User created `.env` and app starts  
+- [x] User confirms settings behavior  
+- [x] User approves moving to done/complete  
 
 ## Result
 
@@ -103,4 +103,3 @@ Config and secrets handling standardized with typed settings and example env.
 - `.env.example` exists and is complete.  
 - App reads `.env` correctly.  
 - User has supplied/confirmed required env values.  
-
