@@ -19,6 +19,7 @@ Leverage a sportsbook odds API (e.g. The Odds API) to pull lines for all two-out
 
 - **Conservative Line Selection:** For each side of the bet, identify the shortest (most conservative) odds line across the five books (highest implied probability). E.g. if Book X offers +150 on Team A and Book Y offers +140 (implying 41.7% and 41.1%), take +140.  
 - **Remove Vig:** Using the chosen book’s pair of odds, compute the implied probabilities and scale them to sum 100%. This back-out of the bookmaker’s margin (vig) yields “fair” probabilities. Convert those to fair odds.  
+- **Scope for v1:** Focus on binary markets: moneyline (H2H) and obvious yes/no props. Defer score/point-type modeling (spreads, totals, alt lines) to a future phase.  
 - **Refresh Schedule:** Poll this Odds API at most every 10 minutes (configurable). Log each API call with timestamp, request details, response status, and any errors. Store raw and normalized odds in the database for analysis.  
 
 ## DataGolf Integration (Golf Tab)
@@ -74,6 +75,7 @@ Implement a utility module to handle odds conversions and EV calculations. Key f
 3. AI/ML per-market predictive models.  
 4. Live betting feeds (later due to cost).  
 5. User features: accounts, notifications, parlays, Kelly criterion, etc.  
+6. Spread/Total modeling (score/point-type markets): derive fair probabilities around spread/total numbers (push probability, margin) and EV for two-sided -110/-110 type markets.  
 
 ## API References & Libraries
 - **Polymarket API:** Gamma API (markets, events, sports tags).  

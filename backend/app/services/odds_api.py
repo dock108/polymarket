@@ -13,6 +13,13 @@ class OddsAPIError(RuntimeError):
     pass
 
 
+def _vig_removed_pair(p1: float, p2: float) -> tuple[float, float]:
+    total = p1 + p2
+    if total <= 0:
+        return 0.0, 0.0
+    return p1 / total, p2 / total
+
+
 class OddsAPIService:
     def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None) -> None:
         self.base_url = base_url or settings.odds_api_base_url
@@ -39,6 +46,7 @@ class OddsAPIService:
         params: Dict[str, Any] = {
             "regions": settings.odds_api_regions,
             "markets": settings.odds_api_markets,
+            "oddsFormat": "american",
         }
         if settings.odds_api_bookmakers:
             params["bookmakers"] = settings.odds_api_bookmakers
@@ -52,7 +60,9 @@ class OddsAPIService:
             title = str(ev.get("home_team") or ev.get("title") or "")
             lines: List[BookLine] = []
             bookmakers = ev.get("bookmakers") or []
-            per_side: Dict[str, int] = {}
+
+            per_side_h2h: Dict[str, int] = {}
+
             for book in bookmakers:
                 bkey = str(book.get("key") or book.get("title") or "")
                 markets = book.get("markets") or []
@@ -63,37 +73,27 @@ class OddsAPIService:
                         side = str(o.get("name") or o.get("description") or "")
                         american = o.get("price")
                         point = None
-                        if mk_key in ("spreads", "totals"):
-                            # point may be present (spread/total number)
+                        if mk_key in ("spreads", "totals") and o.get("point") is not None:
                             try:
-                                point = float(o.get("point")) if o.get("point") is not None else None
+                                point = float(o.get("point"))
                             except Exception:
                                 point = None
+                        # Skip lines without odds to avoid decimal_odds=None in output
                         if american is None:
-                            # Record line with point only for completeness
-                            lines.append(
-                                BookLine(
-                                    bookmaker=bkey,
-                                    market=mk_key,
-                                    side=side,
-                                    american_odds=None,
-                                    decimal_odds=None,
-                                    point=point,
-                                )
-                            )
                             continue
                         try:
                             american = int(american)
                         except Exception:
                             continue
-                        if side not in per_side:
-                            per_side[side] = american
-                        else:
-                            current = per_side[side]
-                            pick = american
-                            if (american < 0 and current < 0 and american < current) or (american > 0 and current > 0 and american < current) or (american < 0 and current > 0):
+                        if mk_key == "h2h":
+                            if side not in per_side_h2h:
+                                per_side_h2h[side] = american
+                            else:
+                                current = per_side_h2h[side]
                                 pick = american
-                            per_side[side] = pick
+                                if (american < 0 and current < 0 and american < current) or (american > 0 and current > 0 and american < current) or (american < 0 and current > 0):
+                                    pick = american
+                                per_side_h2h[side] = pick
                         lines.append(
                             BookLine(
                                 bookmaker=bkey,
@@ -104,6 +104,29 @@ class OddsAPIService:
                                 point=point,
                             )
                         )
+
+            if len(per_side_h2h) == 2:
+                sides = list(per_side_h2h.keys())
+                a_1, a_2 = per_side_h2h[sides[0]], per_side_h2h[sides[1]]
+
+                def implied_from_american(a: int) -> float:
+                    dec = american_to_decimal(a)
+                    return 1.0 / dec
+
+                p1 = implied_from_american(a_1)
+                p2 = implied_from_american(a_2)
+                f1, f2 = _vig_removed_pair(p1, p2)
+
+                for bl in lines:
+                    if bl.market != "h2h":
+                        continue
+                    if bl.side == sides[0]:
+                        bl.fair_probability = f1
+                        bl.fair_decimal_odds = (1.0 / f1) if f1 > 0 else None
+                    elif bl.side == sides[1]:
+                        bl.fair_probability = f2
+                        bl.fair_decimal_odds = (1.0 / f2) if f2 > 0 else None
+
             results.append(EventLines(sport=sport_key, event_id=eid, title=title, lines=lines))
         return results
 
