@@ -4,8 +4,8 @@
 **Component**: Backend / Database  
 **Beta Blocker**: Yes (persistence needed)  
 **Discovered**: 2025-09-26  
-**Status**: Awaiting User Testing  
-**Resolved**: 
+**Status**: RESOLVED  
+**Resolved**: 2025-09-26
 
 ## Problem Description
 
@@ -23,8 +23,8 @@ The backend can connect to SQLite via a configured URL. Alembic migrations initi
 
 ## Files to Investigate
 
-- `backend/app/db/session.py`, `backend/app/db/base.py` (to be added)  
-- `alembic.ini`, `backend/alembic/` (to be added)  
+- `backend/app/db/session.py`, `backend/app/db/base.py`  
+- `alembic.ini`, `backend/alembic/`  
 
 ## Root Cause Analysis
 
@@ -42,7 +42,7 @@ The backend can connect to SQLite via a configured URL. Alembic migrations initi
 
 ### Code Changes
 
-**File Modified**: `N/A - new files will be created`
+**File Modified**: `N/A - new files were added`
 
 **Before**:
 ```text
@@ -53,23 +53,24 @@ No database configuration.
 ```text
 backend/app/db/session.py
 backend/app/db/base.py
-alembic.ini
+backend/alembic.ini
+backend/alembic/env.py
 backend/alembic/versions/0001_initial.py
 ```
 
 ## Testing Requirements
 
 ### Manual Testing Steps
-1. Run Alembic upgrade head.  
+1. Run `alembic -c alembic.ini upgrade head`.  
 2. Verify DB file exists and tables created.  
 
 ### Test Scenarios
-- [ ] Alembic upgrade works  
-- [ ] Session can query a simple table  
+- [x] Alembic upgrade works  
+- [x] Session can query a simple table (smoke)  
 
 ## Status
 
-**Current Status**: Awaiting User Testing  
+**Current Status**: RESOLVED  
 **Last Updated**: 2025-09-26
 
 ### Implementation Checklist
@@ -84,13 +85,13 @@ backend/alembic/versions/0001_initial.py
 - [x] Blockers documented  
 
 ### User Testing Confirmation
-- [ ] User ran migration locally  
-- [ ] User confirms DB file/tables present  
-- [ ] User approves moving to done/complete  
+- [x] User ran migration locally  
+- [x] User confirms DB file/tables present  
+- [x] User approves moving to done/complete  
 
 ## Result
 
-Database layer established with migrations, ready for models.
+Database layer established with migrations, ready for models. DB created at `backend/data/dev.db` by default; Docker uses repo `data/` volume.
 
 ---
 
@@ -102,5 +103,4 @@ Database layer established with migrations, ready for models.
 ## Definition of Done (including user confirmations)
 
 - Alembic migrations run cleanly.  
-- User validated DB initialization locally.  
-
+- User validated DB initialization locally.
