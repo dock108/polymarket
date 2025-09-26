@@ -1,16 +1,20 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
+import time
 
 import httpx
 
 from app.core.config import settings
 from app.schemas.odds_api import BookLine, EventLines
 from app.utils.odds import american_to_decimal
+from app.services._http import http_get_with_retry
 
 
 class OddsAPIError(RuntimeError):
-    pass
+    def __init__(self, message: str, status_code: Optional[int] = None) -> None:
+        super().__init__(message)
+        self.status_code = status_code
 
 
 def _vig_removed_pair(p1: float, p2: float) -> tuple[float, float]:
@@ -20,13 +24,32 @@ def _vig_removed_pair(p1: float, p2: float) -> tuple[float, float]:
     return p1 / total, p2 / total
 
 
+class _TTLCache:
+    def __init__(self, ttl_seconds: int) -> None:
+        self.ttl = ttl_seconds
+        self._store: Dict[Tuple[str, ...], Tuple[float, Any]] = {}
+
+    def get(self, key: Tuple[str, ...]) -> Optional[Any]:
+        now = time.time()
+        if key in self._store:
+            ts, val = self._store[key]
+            if now - ts <= self.ttl:
+                return val
+            del self._store[key]
+        return None
+
+    def set(self, key: Tuple[str, ...], val: Any) -> None:
+        self._store[key] = (time.time(), val)
+
+
 class OddsAPIService:
     def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None) -> None:
         self.base_url = base_url or settings.odds_api_base_url
         self.api_key = api_key or settings.odds_api_key
         if not self.api_key:
-            raise OddsAPIError("ODDS_API_KEY is required")
+            raise OddsAPIError("ODDS_API_KEY is required", status_code=503)
         self._client = httpx.AsyncClient(base_url=self.base_url, timeout=20.0, headers={"User-Agent": "polymarket-edge/0.1"})
+        self._cache = _TTLCache(ttl_seconds=settings.refresh_interval_seconds)
 
     async def close(self) -> None:
         await self._client.aclose()
@@ -34,12 +57,12 @@ class OddsAPIService:
     async def _get(self, path: str, params: Optional[Dict[str, Any]] = None) -> Any:
         p = params.copy() if params else {}
         p["apiKey"] = self.api_key
-        resp = await self._client.get(path, params=p)
+        resp = await http_get_with_retry(self._client, path, p)
         try:
             resp.raise_for_status()
         except httpx.HTTPStatusError as exc:
-            detail = exc.response.text
-            raise OddsAPIError(f"Odds API error {exc.response.status_code}: {detail}") from exc
+            detail = resp.text
+            raise OddsAPIError(f"Odds API error {resp.status_code}: {detail}", status_code=resp.status_code) from exc
         return resp.json()
 
     async def fetch_sport_odds(self, sport_key: str) -> List[EventLines]:
@@ -50,9 +73,15 @@ class OddsAPIService:
         }
         if settings.odds_api_bookmakers:
             params["bookmakers"] = settings.odds_api_bookmakers
+
+        cache_key = ("odds", sport_key, params.get("regions", ""), params.get("markets", ""), params.get("bookmakers", ""))
+        cached = self._cache.get(cache_key)
+        if cached is not None:
+            return cached
+
         data = await self._get(f"/sports/{sport_key}/odds", params=params)
         if not isinstance(data, list):
-            raise OddsAPIError("Unexpected odds response shape; expected list.")
+            raise OddsAPIError("Unexpected odds response shape; expected list.", status_code=503)
 
         results: List[EventLines] = []
         for ev in data:
@@ -78,7 +107,6 @@ class OddsAPIService:
                                 point = float(o.get("point"))
                             except Exception:
                                 point = None
-                        # Skip lines without odds to avoid decimal_odds=None in output
                         if american is None:
                             continue
                         try:
@@ -128,6 +156,8 @@ class OddsAPIService:
                         bl.fair_decimal_odds = (1.0 / f2) if f2 > 0 else None
 
             results.append(EventLines(sport=sport_key, event_id=eid, title=title, lines=lines))
+
+        self._cache.set(cache_key, results)
         return results
 
 

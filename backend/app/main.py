@@ -1,10 +1,17 @@
 from fastapi import FastAPI
 
 from app.core.config import settings
+from app.api.routes.opportunities import router as opp_router
+from app.api.routes.odds import router as odds_router
+from app.api.routes.golf import router as golf_router
 
 
 def create_app() -> FastAPI:
     app = FastAPI(title=settings.app_name)
+
+    app.include_router(opp_router)
+    app.include_router(odds_router)
+    app.include_router(golf_router)
 
     @app.get("/health")
     async def health() -> dict:

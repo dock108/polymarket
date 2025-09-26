@@ -11,6 +11,7 @@ import httpx
 from app.core.config import settings
 from app.schemas.polymarket import PMEvent, PMMarket, PMOutcome
 from app.utils.odds import apply_fee_to_probability, clamp
+from app.services._http import http_get_with_retry
 
 
 class PolymarketAPIError(RuntimeError):
@@ -50,8 +51,7 @@ class PolymarketService:
         await self._client.aclose()
 
     async def _get(self, path: str, params: Optional[Dict[str, Any]] = None) -> Any:
-        resp = await self._client.get(path, params=params)
-        resp.raise_for_status()
+        resp = await http_get_with_retry(self._client, path, params)
         return resp.json()
 
     def _extract_markets_array(self, data: Any) -> List[Dict[str, Any]]:
@@ -110,7 +110,6 @@ class PolymarketService:
             return None
         try:
             if isinstance(value, (int, float)):
-                # treat as seconds; handle ms if too large
                 if value > 1e12:
                     value = value / 1000.0
                 return dt.datetime.fromtimestamp(float(value), tz=dt.timezone.utc)
@@ -122,12 +121,10 @@ class PolymarketService:
         return None
 
     def _is_future_or_live(self, m: Dict[str, Any]) -> bool:
-        # Drop archived/closed markets
         if bool(m.get("archived")):
             return False
         if bool(m.get("closed")):
             return False
-        # If endDate exists and is in the past, drop
         end_dt = self._parse_dt(m.get("endDate") or m.get("endDateIso") or m.get("endTime"))
         if end_dt is not None:
             now = dt.datetime.now(dt.timezone.utc)
@@ -177,7 +174,6 @@ class PolymarketService:
         if yes_prob is None:
             return None
         yes_prob = clamp(yes_prob, 0.0, 1.0)
-        # Drop degenerate 0 or 1
         if yes_prob <= 0.0 or yes_prob >= 1.0:
             return None
         yes_prob = apply_fee_to_probability(yes_prob, self.fee_cushion)
