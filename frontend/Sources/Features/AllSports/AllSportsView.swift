@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AllSportsView: View {
-    @State private var opportunities: [OpportunityDTO] = []
+    @State private var opportunities: [Opportunity] = []
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
 

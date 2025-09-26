@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		114E19F7F943E50C372300BC /* Odds.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E90BC40C9A93EA747B4852 /* Odds.swift */; };
 		2BFBE6A72AD358624DE8049B /* GolfView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC9203D9984232CCE8F3DA0 /* GolfView.swift */; };
 		61CBA6A22E4C193063EC6E56 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A8297E4F09F677878A7946 /* SettingsView.swift */; };
 		888F5D001BF2B7D523A91251 /* PolymarketEdgeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C395A73C9B6AA3734967915 /* PolymarketEdgeApp.swift */; };
 		E4231F2806C021C5D79DF41B /* AllSportsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284257E899772476A5D2CF4D /* AllSportsView.swift */; };
 		F68C865C2C76DAC2D063F41F /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217B67CBD576C986DA015BDF /* APIClient.swift */; };
+		FB1DAAE4A5BCDFA9DE90C398 /* Opportunity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780DB54E9B8805E6557A2DE0 /* Opportunity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,8 +21,10 @@
 		284257E899772476A5D2CF4D /* AllSportsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSportsView.swift; sourceTree = "<group>"; };
 		5C395A73C9B6AA3734967915 /* PolymarketEdgeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolymarketEdgeApp.swift; sourceTree = "<group>"; };
 		5FC9203D9984232CCE8F3DA0 /* GolfView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GolfView.swift; sourceTree = "<group>"; };
+		780DB54E9B8805E6557A2DE0 /* Opportunity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Opportunity.swift; sourceTree = "<group>"; };
 		9337DF9C92C140D056F06601 /* PolymarketEdge.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PolymarketEdge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1A8297E4F09F677878A7946 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		E1E90BC40C9A93EA747B4852 /* Odds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Odds.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -45,6 +49,7 @@
 			children = (
 				5C395A73C9B6AA3734967915 /* PolymarketEdgeApp.swift */,
 				DFD2F8C8AE3C97D15CD12A4C /* Features */,
+				A37629968ED0191649D22219 /* Models */,
 				01CA4563B6AC706FFA43702F /* Networking */,
 			);
 			path = Sources;
@@ -64,6 +69,15 @@
 				9337DF9C92C140D056F06601 /* PolymarketEdge.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A37629968ED0191649D22219 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E1E90BC40C9A93EA747B4852 /* Odds.swift */,
+				780DB54E9B8805E6557A2DE0 /* Opportunity.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		AD2BCEE5B7B6619DA582F8CC = {
@@ -146,6 +160,8 @@
 				F68C865C2C76DAC2D063F41F /* APIClient.swift in Sources */,
 				E4231F2806C021C5D79DF41B /* AllSportsView.swift in Sources */,
 				2BFBE6A72AD358624DE8049B /* GolfView.swift in Sources */,
+				114E19F7F943E50C372300BC /* Odds.swift in Sources */,
+				FB1DAAE4A5BCDFA9DE90C398 /* Opportunity.swift in Sources */,
 				888F5D001BF2B7D523A91251 /* PolymarketEdgeApp.swift in Sources */,
 				61CBA6A22E4C193063EC6E56 /* SettingsView.swift in Sources */,
 			);
