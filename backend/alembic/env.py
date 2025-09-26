@@ -23,7 +23,7 @@ db_url = settings.database_url or f"sqlite:///{abs_default_db_path}"
 
 # Normalize sqlite file path and ensure parent directory exists
 if db_url.startswith("sqlite:///"):
-    raw_path = db_url[len("sqlite:///"):]
+    raw_path = db_url[len("sqlite:///") :]
     if raw_path != ":memory:":
         # Make absolute relative to backend_dir
         resolved = raw_path

@@ -22,13 +22,13 @@ async def http_get_with_retry(
             if 500 <= resp.status_code < 600:
                 if attempt == retries - 1:
                     return resp
-                await asyncio.sleep(backoff_base * (2 ** attempt))
+                await asyncio.sleep(backoff_base * (2**attempt))
                 continue
             return resp
         except Exception as exc:  # network/transport errors
             last_exc = exc
             if attempt == retries - 1:
                 raise
-            await asyncio.sleep(backoff_base * (2 ** attempt))
+            await asyncio.sleep(backoff_base * (2**attempt))
     assert last_exc is not None
     raise last_exc

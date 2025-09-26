@@ -48,7 +48,9 @@ class OddsAPIService:
         self.api_key = api_key or settings.odds_api_key
         if not self.api_key:
             raise OddsAPIError("ODDS_API_KEY is required", status_code=503)
-        self._client = httpx.AsyncClient(base_url=self.base_url, timeout=20.0, headers={"User-Agent": "polymarket-edge/0.1"})
+        self._client = httpx.AsyncClient(
+            base_url=self.base_url, timeout=20.0, headers={"User-Agent": "polymarket-edge/0.1"}
+        )
         self._cache = _TTLCache(ttl_seconds=settings.refresh_interval_seconds)
 
     async def close(self) -> None:
@@ -62,7 +64,9 @@ class OddsAPIService:
             resp.raise_for_status()
         except httpx.HTTPStatusError as exc:
             detail = resp.text
-            raise OddsAPIError(f"Odds API error {resp.status_code}: {detail}", status_code=resp.status_code) from exc
+            raise OddsAPIError(
+                f"Odds API error {resp.status_code}: {detail}", status_code=resp.status_code
+            ) from exc
         return resp.json()
 
     async def fetch_sport_odds(self, sport_key: str) -> List[EventLines]:
@@ -74,7 +78,13 @@ class OddsAPIService:
         if settings.odds_api_bookmakers:
             params["bookmakers"] = settings.odds_api_bookmakers
 
-        cache_key = ("odds", sport_key, params.get("regions", ""), params.get("markets", ""), params.get("bookmakers", ""))
+        cache_key = (
+            "odds",
+            sport_key,
+            params.get("regions", ""),
+            params.get("markets", ""),
+            params.get("bookmakers", ""),
+        )
         cached = self._cache.get(cache_key)
         if cached is not None:
             return cached
@@ -119,7 +129,11 @@ class OddsAPIService:
                             else:
                                 current = per_side_h2h[side]
                                 pick = american
-                                if (american < 0 and current < 0 and american < current) or (american > 0 and current > 0 and american < current) or (american < 0 and current > 0):
+                                if (
+                                    (american < 0 and current < 0 and american < current)
+                                    or (american > 0 and current > 0 and american < current)
+                                    or (american < 0 and current > 0)
+                                ):
                                     pick = american
                                 per_side_h2h[side] = pick
                         lines.append(

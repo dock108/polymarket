@@ -1,10 +1,11 @@
 """initial empty migration
 
 Revision ID: 0001
-Revises: 
+Revises:
 Create Date: 2025-09-26
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

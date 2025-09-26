@@ -59,9 +59,13 @@ class PolymarketService:
             return data
         if isinstance(data, dict) and isinstance(data.get("markets"), list):
             return data["markets"]  # type: ignore[index]
-        raise PolymarketAPIError("Unexpected /markets response format; expected list or {\"markets\": [...]}.")
+        raise PolymarketAPIError(
+            'Unexpected /markets response format; expected list or {"markets": [...]}.'
+        )
 
-    async def fetch_markets_paginated(self, page_limit: int = 500, max_pages: int = 5) -> List[Dict[str, Any]]:
+    async def fetch_markets_paginated(
+        self, page_limit: int = 500, max_pages: int = 5
+    ) -> List[Dict[str, Any]]:
         cache_key = ("markets", f"limit={page_limit}", f"max_pages={max_pages}")
         cached = self._cache.get(cache_key)
         if cached is not None:
@@ -89,7 +93,9 @@ class PolymarketService:
                 break
             offset += page_limit
         if not all_markets:
-            raise PolymarketAPIError("No markets returned from /markets (closed=false). Check API availability.")
+            raise PolymarketAPIError(
+                "No markets returned from /markets (closed=false). Check API availability."
+            )
 
         self._cache.set(cache_key, all_markets)
         return all_markets
@@ -97,10 +103,19 @@ class PolymarketService:
     def _extract_event_info(self, m: Dict[str, Any]) -> tuple[str, str]:
         ev_list = m.get("events")
         if not isinstance(ev_list, list) or not ev_list:
-            raise PolymarketAPIError("Market missing embedded 'events' array; cannot determine event grouping.")
+            raise PolymarketAPIError(
+                "Market missing embedded 'events' array; cannot determine event grouping."
+            )
         ev0 = ev_list[0] or {}
         eid = str(ev0.get("id") or ev0.get("slug") or ev0.get("eventId") or "").strip()
-        title = str(ev0.get("title") or ev0.get("name") or m.get("eventName") or m.get("title") or m.get("question") or "").strip()
+        title = str(
+            ev0.get("title")
+            or ev0.get("name")
+            or m.get("eventName")
+            or m.get("title")
+            or m.get("question")
+            or ""
+        ).strip()
         if not eid:
             raise PolymarketAPIError("Embedded event does not contain an 'id' or 'slug'.")
         return eid, title
@@ -138,7 +153,9 @@ class PolymarketService:
         candidates: List[Optional[float]] = []
         names_lower: List[str] = []
         for o in outcomes_data:
-            names_lower.append(str(o.get("name") or o.get("label") or o.get("outcome") or "").lower())
+            names_lower.append(
+                str(o.get("name") or o.get("label") or o.get("outcome") or "").lower()
+            )
             val = None
             for price_key in ("price", "lastPrice", "yesPrice", "probability"):
                 if o.get(price_key) is not None:
@@ -208,7 +225,9 @@ class PolymarketService:
         for eid, mkts in grouped.items():
             if not mkts:
                 continue
-            events.append(PMEvent(event_id=eid, title=titles.get(eid, ""), sport=None, markets=mkts))
+            events.append(
+                PMEvent(event_id=eid, title=titles.get(eid, ""), sport=None, markets=mkts)
+            )
         return events
 
 

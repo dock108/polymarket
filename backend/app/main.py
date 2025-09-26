@@ -22,7 +22,11 @@ def create_app() -> FastAPI:
         # Keep secrets out of logs; log non-sensitive config
         app.logger = getattr(app, "logger", None)
         if app.logger:
-            app.logger.info("App starting with refresh_interval_seconds=%s fee_cushion=%s", settings.refresh_interval_seconds, settings.fee_cushion)
+            app.logger.info(
+                "App starting with refresh_interval_seconds=%s fee_cushion=%s",
+                settings.refresh_interval_seconds,
+                settings.fee_cushion,
+            )
 
     return app
 

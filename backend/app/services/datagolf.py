@@ -18,7 +18,9 @@ class DataGolfService:
         self.api_key = api_key or settings.datagolf_api_key
         if not self.api_key:
             raise DataGolfError("DATAGOLF_API_KEY is required")
-        self._client = httpx.AsyncClient(base_url=self.base_url, timeout=20.0, headers={"User-Agent": "polymarket-edge/0.1"})
+        self._client = httpx.AsyncClient(
+            base_url=self.base_url, timeout=20.0, headers={"User-Agent": "polymarket-edge/0.1"}
+        )
 
     async def close(self) -> None:
         await self._client.aclose()
