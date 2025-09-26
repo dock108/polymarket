@@ -1,27 +1,66 @@
 # Polymarket Sports Betting Edge App
 
-Monorepo for a FastAPI backend and SwiftUI iOS app that surfaces positive-EV opportunities by aggregating Polymarket markets, sharp sportsbook lines, and DataGolf forecasts.
+Monorepo for a FastAPI backend and SwiftUI iOS app that identifies +EV opportunities by combining Polymarket and sportsbook odds.
 
-## Architecture at a Glance
-- Backend: FastAPI (Python 3.11+), SQLAlchemy, Pydantic, httpx; Dockerized; Nginx reverse proxy in prod.
-- Frontend: SwiftUI (iOS 17+), async/await `URLSession`, Codable DTOs.
-- Data Sources: Polymarket Gamma API (binary markets), The Odds API v4, DataGolf.
-- Conventions: fee cushion on Polymarket, vig removal for books, unified EV/edge.
+## Quickstart
 
-## Repo Layout
-- `/backend` – FastAPI app (services, API, DB models, utils)
-- `/frontend` – SwiftUI iOS app
-- `/docs` – docs and runbooks
-- `/issues` – standardized issue markdowns
+Prereqs:
+- Python 3.11+
+- Xcode 15+ (iOS 17 SDK)
+- Homebrew (optional for tools)
 
-## Quickstart (Dev)
-1. Ensure Python 3.11+ and Xcode (for iOS) are installed.
-2. Run `scripts/bootstrap.sh` (creates local env stubs and tips).
-3. See `issues/` for the active tasks. Start with 092625-2..5.
+Clone and bootstrap:
+```bash
+cd backend
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+export PYTHONPATH=.
+# env vars
+cp ../.env.example ../.env
+```
 
-## Guidelines
-- See `AGENTS.md` for collaboration rules and Definition of Done.
-- Do not commit real secrets. Use `.env` locally and GitHub secrets in CI.
+Run API (dev):
+```bash
+cd backend
+./dev.sh
+# visit http://localhost:8000/health
+```
 
-## Status
-Initial scaffolding; see `issues/092625-1.md` for checklist.
+Open iOS app:
+- `cd frontend`
+- `xcodegen generate` (if not already generated)
+- Open `PolymarketEdge.xcodeproj` and run on iOS 17 simulator.
+
+## Environment
+See `.env.example` for:
+- ODDS_API_KEY
+- DATAGOLF_API_KEY (backlogged features)
+- DATABASE_URL, FEE_CUSHION, REFRESH_INTERVAL_SECONDS
+
+## Backend
+- FastAPI app factory in `backend/app/main.py`
+- Services: Polymarket, Odds API, Opportunity engine
+- Endpoints:
+  - `GET /api/opportunities`
+  - `GET /api/odds/{sport}`
+  - `GET /api/golf` (placeholder)
+
+## iOS App
+- SwiftUI tabs: All Sports, Golf (backlog), Settings
+- Networking with async/await; configurable `API_BASE_URL` in `frontend/Info.plist`
+- Settings: fee cushion, refresh interval, default EV threshold, Developer Mode
+
+## Testing
+```bash
+cd backend
+source .venv/bin/activate
+pytest -q
+```
+
+## Deployment (overview)
+- Run backend behind Nginx reverse proxy with HTTPS (see `docs/runbooks/deploy.md`)
+- Health: `/health`
+
+## Docs
+- API: `docs/api.md`
+- Runbooks: `docs/runbooks/local.md`, `docs/runbooks/deploy.md`
