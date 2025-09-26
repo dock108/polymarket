@@ -7,7 +7,7 @@ final class AllSportsViewModel: ObservableObject {
     @Published var errorMessage: String?
 
     @Published var selectedSport: String? = nil // nil = All
-    @Published var minEVPercent: Double = 0 // 0 disables EV filtering in beta
+    @Published var minEVPercent: Double // 0 disables EV filtering in beta
 
     @Published var visibleCount: Int = 50
 
@@ -15,6 +15,7 @@ final class AllSportsViewModel: ObservableObject {
 
     init(api: APIClient = APIClient()) {
         self.api = api
+        self.minEVPercent = SettingsStore.shared.defaultEVPercent
     }
 
     var availableSports: [String] {
