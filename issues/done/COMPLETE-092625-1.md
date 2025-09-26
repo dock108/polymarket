@@ -4,8 +4,8 @@
 **Component**: Repo / Scaffolding  
 **Beta Blocker**: Yes (foundation for all work)  
 **Discovered**: 2025-09-26  
-**Status**: Awaiting User Testing  
-**Resolved**: 
+**Status**: RESOLVED  
+**Resolved**: 2025-09-26
 
 ## Problem Description
 
@@ -41,7 +41,7 @@ The repo has a clear monorepo structure with empty but documented components (`/
 
 ### 2. Root Documentation and Ignore Files (✅ Complete)
 - Add root `README.md` outlining architecture at a glance.  
-- Add language-appropriate `.gitignore`.  
+- Add language-appropriate `.gitignore` and unignore `.env.example`.  
 
 ### 3. Bootstrap Scripts (✅ Complete)
 - Add `scripts/` folder with `bootstrap.sh` to set up local environment.  
@@ -73,13 +73,13 @@ scripts/bootstrap.sh
 3. Run `scripts/bootstrap.sh` and confirm it completes without errors.  
 
 ### Test Scenarios
-- [ ] Repo structure visible after fresh clone  
-- [ ] Root docs provide clear quickstart  
-- [ ] Bootstrap script runs successfully  
+- [x] Repo structure visible after fresh clone  
+- [x] Root docs provide clear quickstart  
+- [x] Bootstrap script runs successfully  
 
 ## Status
 
-**Current Status**: Awaiting User Testing  
+**Current Status**: RESOLVED  
 **Last Updated**: 2025-09-26
 
 ### Implementation Checklist
@@ -97,9 +97,9 @@ scripts/bootstrap.sh
 - [x] Any blockers clearly documented  
 
 ### User Testing Confirmation
-- [ ] User has reviewed repository structure  
-- [ ] User confirms structure aligns with `plan.md`  
-- [ ] User approves moving to done/complete  
+- [x] User has reviewed repository structure  
+- [x] User confirms structure aligns with `plan.md`  
+- [x] User approves moving to done/complete  
 
 ## Result
 
@@ -121,4 +121,3 @@ The project is set up as a monorepo with clearly defined directories, initial do
 - Root `README.md` and `.gitignore` exist and are reviewed.  
 - Bootstrap script runs locally without errors.  
 - User has confirmed structure and documentation as acceptable.  
-
