@@ -11,8 +11,11 @@
 		1A70C9666685A494FE9494F5 /* AllSportsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A870301211DD51E548E188 /* AllSportsViewModel.swift */; };
 		2BFBE6A72AD358624DE8049B /* GolfView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC9203D9984232CCE8F3DA0 /* GolfView.swift */; };
 		61CBA6A22E4C193063EC6E56 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A8297E4F09F677878A7946 /* SettingsView.swift */; };
+		673E69B1388DFB1D94895B43 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09D1BC0BA6BF9335479FE37 /* Formatters.swift */; };
+		7F4CB3D685C88982DB4BFF1C /* BetDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3565414B725A27246C77C26F /* BetDetailView.swift */; };
 		888F5D001BF2B7D523A91251 /* PolymarketEdgeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C395A73C9B6AA3734967915 /* PolymarketEdgeApp.swift */; };
 		E4231F2806C021C5D79DF41B /* AllSportsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284257E899772476A5D2CF4D /* AllSportsView.swift */; };
+		F42A1CDA2AD16B536F0414B8 /* BetDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53F7085C61978253744C736 /* BetDetailViewModel.swift */; };
 		F68C865C2C76DAC2D063F41F /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217B67CBD576C986DA015BDF /* APIClient.swift */; };
 		FB1DAAE4A5BCDFA9DE90C398 /* Opportunity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780DB54E9B8805E6557A2DE0 /* Opportunity.swift */; };
 /* End PBXBuildFile section */
@@ -20,13 +23,16 @@
 /* Begin PBXFileReference section */
 		217B67CBD576C986DA015BDF /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		284257E899772476A5D2CF4D /* AllSportsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSportsView.swift; sourceTree = "<group>"; };
+		3565414B725A27246C77C26F /* BetDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetDetailView.swift; sourceTree = "<group>"; };
 		5C395A73C9B6AA3734967915 /* PolymarketEdgeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolymarketEdgeApp.swift; sourceTree = "<group>"; };
 		5FC9203D9984232CCE8F3DA0 /* GolfView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GolfView.swift; sourceTree = "<group>"; };
 		780DB54E9B8805E6557A2DE0 /* Opportunity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Opportunity.swift; sourceTree = "<group>"; };
 		9337DF9C92C140D056F06601 /* PolymarketEdge.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PolymarketEdge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C53F7085C61978253744C736 /* BetDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetDetailViewModel.swift; sourceTree = "<group>"; };
 		E1A8297E4F09F677878A7946 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E1E90BC40C9A93EA747B4852 /* Odds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Odds.swift; sourceTree = "<group>"; };
 		E5A870301211DD51E548E188 /* AllSportsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSportsViewModel.swift; sourceTree = "<group>"; };
+		F09D1BC0BA6BF9335479FE37 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -54,6 +60,7 @@
 				DFD2F8C8AE3C97D15CD12A4C /* Features */,
 				A37629968ED0191649D22219 /* Models */,
 				01CA4563B6AC706FFA43702F /* Networking */,
+				AE63E162CA3FE3838FF63BA7 /* Utils */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -64,6 +71,15 @@
 				5FC9203D9984232CCE8F3DA0 /* GolfView.swift */,
 			);
 			path = Golf;
+			sourceTree = "<group>";
+		};
+		6FDD96652D7B691597433EEF /* Detail */ = {
+			isa = PBXGroup;
+			children = (
+				3565414B725A27246C77C26F /* BetDetailView.swift */,
+				C53F7085C61978253744C736 /* BetDetailViewModel.swift */,
+			);
+			path = Detail;
 			sourceTree = "<group>";
 		};
 		9FFE1751625FA45D1E62B9B6 /* Products */ = {
@@ -91,6 +107,14 @@
 			);
 			sourceTree = "<group>";
 		};
+		AE63E162CA3FE3838FF63BA7 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				F09D1BC0BA6BF9335479FE37 /* Formatters.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		BF901FE3D365E103B438091C /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				198FA026AB8E27289AFC7452 /* AllSports */,
+				6FDD96652D7B691597433EEF /* Detail */,
 				43F55F8A117CA663E75A9D80 /* Golf */,
 				BF901FE3D365E103B438091C /* Settings */,
 			);
@@ -163,6 +188,9 @@
 				F68C865C2C76DAC2D063F41F /* APIClient.swift in Sources */,
 				E4231F2806C021C5D79DF41B /* AllSportsView.swift in Sources */,
 				1A70C9666685A494FE9494F5 /* AllSportsViewModel.swift in Sources */,
+				7F4CB3D685C88982DB4BFF1C /* BetDetailView.swift in Sources */,
+				F42A1CDA2AD16B536F0414B8 /* BetDetailViewModel.swift in Sources */,
+				673E69B1388DFB1D94895B43 /* Formatters.swift in Sources */,
 				2BFBE6A72AD358624DE8049B /* GolfView.swift in Sources */,
 				114E19F7F943E50C372300BC /* Odds.swift in Sources */,
 				FB1DAAE4A5BCDFA9DE90C398 /* Opportunity.swift in Sources */,

@@ -18,21 +18,23 @@ struct AllSportsView: View {
                         .foregroundColor(.secondary)
                 } else {
                     List(vm.filteredSorted) { opp in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(opp.title).font(.headline)
-                            HStack {
-                                if let ev = opp.ev_percent {
-                                    Text(String(format: "EV %%: %.2f", ev * 100))
+                        NavigationLink(destination: BetDetailView(opportunity: opp)) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(opp.title).font(.headline)
+                                HStack {
+                                    if let ev = opp.ev_percent {
+                                        Text(String(format: "EV %%: %.2f", ev * 100))
+                                    }
+                                    if let price = opp.price {
+                                        Text(String(format: "Price: %.3f", price))
+                                    }
+                                    if let prob = opp.yes_probability {
+                                        Text(String(format: "P_yes: %.3f", prob))
+                                    }
                                 }
-                                if let price = opp.price {
-                                    Text(String(format: "Price: %.3f", price))
-                                }
-                                if let prob = opp.yes_probability {
-                                    Text(String(format: "P_yes: %.3f", prob))
-                                }
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
                             }
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
                         }
                         .onAppear { vm.loadMoreIfNeeded(currentItem: opp) }
                     }
