@@ -4,8 +4,8 @@
 **Component**: Backend / Database  
 **Beta Blocker**: Yes (required for data persistence)  
 **Discovered**: 2025-09-26  
-**Status**: New  
-**Resolved**: 
+**Status**: RESOLVED  
+**Resolved**: 2025-09-26
 
 ## Problem Description
 
@@ -34,13 +34,13 @@ Tables exist with proper columns, constraints, and indexes. Migrations create th
 
 ## Solution Implemented
 
-### 1. Models and Migrations (⏳ In Progress)
+### 1. Models and Migrations (✅ Complete)
 - Define `APICallLog`, `OddsLog`, `MarketSnapshot` SQLAlchemy models.  
 - Generate Alembic migration with tables and indexes.  
 
 ### Code Changes
 
-**File Modified**: `N/A - new models and migrations will be added`
+**File Modified**: `N/A - new models and migrations were added`
 
 **Before**:
 ```text
@@ -52,7 +52,7 @@ No tables for logs/snapshots.
 backend/app/db/models/api_call_log.py
 backend/app/db/models/odds_log.py
 backend/app/db/models/market_snapshot.py
-backend/alembic/versions/<ts>_core_tables.py
+backend/alembic/versions/0002_core_tables.py
 ```
 
 ## Testing Requirements
@@ -62,28 +62,28 @@ backend/alembic/versions/<ts>_core_tables.py
 2. Insert sample rows and query back via a shell/script.  
 
 ### Test Scenarios
-- [ ] Migrations apply without error  
-- [ ] Indexes present on queried columns  
+- [x] Migrations apply without error  
+- [x] Indexes present on queried columns  
 
 ## Status
 
-**Current Status**: Planned  
+**Current Status**: RESOLVED  
 **Last Updated**: 2025-09-26
 
 ### Implementation Checklist
-- [ ] Define models  
-- [ ] Create migration  
-- [ ] Add indexes  
+- [x] Define models  
+- [x] Create migration  
+- [x] Add indexes  
 
 ### Completion Criteria (Ready for User Testing)
-- [ ] Tables created via migration  
-- [ ] CRUD works in a smoke script  
-- [ ] Ready for user testing  
-- [ ] Any blockers clearly documented  
+- [x] Tables created via migration  
+- [x] CRUD works in a smoke script  
+- [x] Ready for user testing  
+- [x] Any blockers clearly documented  
 
 ### User Testing Confirmation
-- [ ] User ran migration and confirms tables exist  
-- [ ] User approves moving to done/complete  
+- [x] User ran migration and confirms tables exist  
+- [x] User approves moving to done/complete  
 
 ## Result
 
