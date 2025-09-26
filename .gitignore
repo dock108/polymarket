@@ -1,0 +1,50 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editors/IDE
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.env.*
+.pytest_cache/
+.coverage*
+htmlcov/
+
+# FastAPI/Build
+/dist/
+/build/
+
+# Alembic
+alembic.ini.bak
+
+# Swift/Xcode
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata
+*.xccheckout
+*.moved-aside
+*.xcscmblueprint
+
+# SwiftPM
+.swiftpm/
+.build/
+
+# iOS
+Pods/
+Carthage/
+
+# Logs
+logs/
+*.log
+
+# Docker
+*.pid
