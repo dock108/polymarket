@@ -73,3 +73,4 @@ async def test_baseline_ev_is_zero_and_basis_none(monkeypatch):
         assert o.ev_percent == 0.0
         assert o.comparison_basis == "none"
         assert isinstance(o.comparison_sources, list)
+        assert o.canonical_event_key is not None and len(o.canonical_event_key) > 0

@@ -12,6 +12,11 @@ class Opportunity(BaseModel):
     event_id: Optional[str] = None
     market_id: Optional[str] = None
 
+    # Canonical keys for joining
+    canonical_event_key: Optional[str] = None
+    home_team_key: Optional[str] = None
+    away_team_key: Optional[str] = None
+
     # Polymarket fields
     yes_probability: Optional[float] = None  # fee-adjusted probability
     price: Optional[float] = None  # current price (0..1)

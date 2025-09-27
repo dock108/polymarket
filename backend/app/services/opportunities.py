@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from app.schemas.opportunity import Opportunity
 from app.services.polymarket import PolymarketService
 from app.core.config import settings
+from app.utils.canonical import canonical_event_key
 
 
 class OpportunityEngine:
@@ -46,6 +47,7 @@ class OpportunityEngine:
                         sport=ev.sport,
                         event_id=ev.event_id,
                         market_id=m.market_id,
+                        canonical_event_key=canonical_event_key(ev.sport, ev.title),
                         yes_probability=p_true,
                         price=price,
                         ev_usd_per_share=ev_usd,
