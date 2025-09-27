@@ -7,7 +7,9 @@ class APICallLog(Base):
     __tablename__ = "api_call_log"
 
     id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
 
     service = Column(String(50), nullable=False)  # e.g., polymarket, odds_api, datagolf
     endpoint = Column(String(255), nullable=False)

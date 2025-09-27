@@ -22,7 +22,12 @@ def test_opportunities_route_ok(monkeypatch):
     class FakeEngine:
         async def fetch_opportunities(self):
             return [
-                Opportunity(id="polymarket:x", source="polymarket", title="t", ev_usd_per_share=0.1)
+                Opportunity(
+                    id="polymarket:x",
+                    source="polymarket",
+                    title="t",
+                    ev_usd_per_share=0.1,
+                )
             ]
 
     monkeypatch.setattr(opp_route_mod, "OpportunityEngine", lambda: FakeEngine())
@@ -30,6 +35,29 @@ def test_opportunities_route_ok(monkeypatch):
     assert r.status_code == 200
     data = r.json()
     assert isinstance(data, list) and len(data) == 1
+    # is_stale should be present (additive field)
+    assert "is_stale" in data[0]
+
+
+def test_opportunities_meta_route_ok(monkeypatch):
+    class FakeEngine:
+        async def fetch_opportunities(self):
+            return [
+                Opportunity(
+                    id="polymarket:y",
+                    source="polymarket",
+                    title="t2",
+                    ev_usd_per_share=0.0,
+                )
+            ]
+
+    monkeypatch.setattr(opp_route_mod, "OpportunityEngine", lambda: FakeEngine())
+    r = client.get("/api/opportunities/meta")
+    assert r.status_code == 200
+    payload = r.json()
+    assert set(payload.keys()) >= {"as_of", "staleness_seconds", "items"}
+    assert isinstance(payload["items"], list) and len(payload["items"]) == 1
+    assert "is_stale" in payload["items"][0]
 
 
 def test_odds_route_404_propagates(monkeypatch):
@@ -53,7 +81,11 @@ def test_odds_route_ok(monkeypatch):
                     sport=sport,
                     event_id="e",
                     title="t",
-                    lines=[BookLine(bookmaker="a", market="h2h", side="b", american_odds=100)],
+                    lines=[
+                        BookLine(
+                            bookmaker="a", market="h2h", side="b", american_odds=100
+                        )
+                    ],
                 )
             ]
 

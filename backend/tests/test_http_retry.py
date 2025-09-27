@@ -14,7 +14,9 @@ async def test_http_get_returns_4xx_without_retry():
         return httpx.Response(404, json={"error": "not found"})
 
     transport = httpx.MockTransport(handler)
-    async with httpx.AsyncClient(transport=transport, base_url="https://example.com") as client:
+    async with httpx.AsyncClient(
+        transport=transport, base_url="https://example.com"
+    ) as client:
         resp = await http_get_with_retry(client, "/x")
         assert resp.status_code == 404
         assert calls["n"] == 1
@@ -31,7 +33,9 @@ async def test_http_get_retries_on_5xx_then_succeeds():
         return httpx.Response(200, json={"ok": True})
 
     transport = httpx.MockTransport(handler)
-    async with httpx.AsyncClient(transport=transport, base_url="https://example.com") as client:
+    async with httpx.AsyncClient(
+        transport=transport, base_url="https://example.com"
+    ) as client:
         resp = await http_get_with_retry(client, "/x", retries=3, backoff_base=0.0)
         assert resp.status_code == 200
         assert calls["n"] == 3

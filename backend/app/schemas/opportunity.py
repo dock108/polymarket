@@ -26,3 +26,4 @@ class Opportunity(BaseModel):
 
     # Freshness
     updated_at: Optional[str] = None
+    is_stale: Optional[bool] = None

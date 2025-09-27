@@ -13,13 +13,17 @@ class DataGolfError(RuntimeError):
 
 
 class DataGolfService:
-    def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None) -> None:
+    def __init__(
+        self, base_url: Optional[str] = None, api_key: Optional[str] = None
+    ) -> None:
         self.base_url = base_url or settings.datagolf_base_url
         self.api_key = api_key or settings.datagolf_api_key
         if not self.api_key:
             raise DataGolfError("DATAGOLF_API_KEY is required")
         self._client = httpx.AsyncClient(
-            base_url=self.base_url, timeout=20.0, headers={"User-Agent": "polymarket-edge/0.1"}
+            base_url=self.base_url,
+            timeout=20.0,
+            headers={"User-Agent": "polymarket-edge/0.1"},
         )
 
     async def close(self) -> None:
@@ -33,7 +37,9 @@ class DataGolfService:
             resp.raise_for_status()
         except httpx.HTTPStatusError as exc:
             detail = exc.response.text
-            raise DataGolfError(f"DataGolf error {exc.response.status_code}: {detail}") from exc
+            raise DataGolfError(
+                f"DataGolf error {exc.response.status_code}: {detail}"
+            ) from exc
         return resp.json()
 
     async def fetch_schedule(self, tour: str = "pga") -> List[DGTournament]:
@@ -43,7 +49,9 @@ class DataGolfService:
             events.append(
                 DGTournament(
                     tour=tour,
-                    event_id=str(ev.get("event_id") or ev.get("dg_id") or ev.get("id") or ""),
+                    event_id=str(
+                        ev.get("event_id") or ev.get("dg_id") or ev.get("id") or ""
+                    ),
                     name=str(ev.get("event_name") or ev.get("name") or ""),
                     start_date=str(ev.get("start_date") or ""),
                     end_date=str(ev.get("end_date") or ""),

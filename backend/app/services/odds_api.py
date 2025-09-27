@@ -43,13 +43,17 @@ class _TTLCache:
 
 
 class OddsAPIService:
-    def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None) -> None:
+    def __init__(
+        self, base_url: Optional[str] = None, api_key: Optional[str] = None
+    ) -> None:
         self.base_url = base_url or settings.odds_api_base_url
         self.api_key = api_key or settings.odds_api_key
         if not self.api_key:
             raise OddsAPIError("ODDS_API_KEY is required", status_code=503)
         self._client = httpx.AsyncClient(
-            base_url=self.base_url, timeout=20.0, headers={"User-Agent": "polymarket-edge/0.1"}
+            base_url=self.base_url,
+            timeout=20.0,
+            headers={"User-Agent": "polymarket-edge/0.1"},
         )
         self._cache = _TTLCache(ttl_seconds=settings.refresh_interval_seconds)
 
@@ -65,7 +69,8 @@ class OddsAPIService:
         except httpx.HTTPStatusError as exc:
             detail = resp.text
             raise OddsAPIError(
-                f"Odds API error {resp.status_code}: {detail}", status_code=resp.status_code
+                f"Odds API error {resp.status_code}: {detail}",
+                status_code=resp.status_code,
             ) from exc
         return resp.json()
 
@@ -91,11 +96,15 @@ class OddsAPIService:
 
         data = await self._get(f"/sports/{sport_key}/odds", params=params)
         if not isinstance(data, list):
-            raise OddsAPIError("Unexpected odds response shape; expected list.", status_code=503)
+            raise OddsAPIError(
+                "Unexpected odds response shape; expected list.", status_code=503
+            )
 
         results: List[EventLines] = []
         for ev in data:
-            eid = str(ev.get("id") or ev.get("event_id") or ev.get("commence_time") or "")
+            eid = str(
+                ev.get("id") or ev.get("event_id") or ev.get("commence_time") or ""
+            )
             title = str(ev.get("home_team") or ev.get("title") or "")
             lines: List[BookLine] = []
             bookmakers = ev.get("bookmakers") or []
@@ -112,7 +121,10 @@ class OddsAPIService:
                         side = str(o.get("name") or o.get("description") or "")
                         american = o.get("price")
                         point = None
-                        if mk_key in ("spreads", "totals") and o.get("point") is not None:
+                        if (
+                            mk_key in ("spreads", "totals")
+                            and o.get("point") is not None
+                        ):
                             try:
                                 point = float(o.get("point"))
                             except Exception:
@@ -130,8 +142,16 @@ class OddsAPIService:
                                 current = per_side_h2h[side]
                                 pick = american
                                 if (
-                                    (american < 0 and current < 0 and american < current)
-                                    or (american > 0 and current > 0 and american < current)
+                                    (
+                                        american < 0
+                                        and current < 0
+                                        and american < current
+                                    )
+                                    or (
+                                        american > 0
+                                        and current > 0
+                                        and american < current
+                                    )
                                     or (american < 0 and current > 0)
                                 ):
                                     pick = american
@@ -169,7 +189,9 @@ class OddsAPIService:
                         bl.fair_probability = f2
                         bl.fair_decimal_odds = (1.0 / f2) if f2 > 0 else None
 
-            results.append(EventLines(sport=sport_key, event_id=eid, title=title, lines=lines))
+            results.append(
+                EventLines(sport=sport_key, event_id=eid, title=title, lines=lines)
+            )
 
         self._cache.set(cache_key, results)
         return results

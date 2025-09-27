@@ -7,7 +7,9 @@ class MarketSnapshot(Base):
     __tablename__ = "market_snapshot"
 
     id = Column(Integer, primary_key=True, index=True)
-    captured_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    captured_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
 
     source = Column(String(50), nullable=False)  # polymarket, odds_api, datagolf
     sport = Column(String(50), nullable=True)

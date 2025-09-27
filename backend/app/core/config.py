@@ -23,6 +23,13 @@ class Settings(BaseSettings):
         default=600, alias="REFRESH_INTERVAL_SECONDS", ge=60, le=3600
     )
 
+    # Sports taxonomy
+    supported_sports_allowlist: str = Field(
+        default="",
+        alias="SUPPORTED_SPORTS",
+        description="Comma-separated sport codes to include. Empty means include all.",
+    )
+
     # Polymarket
     polymarket_base_url: str = Field(
         default="https://gamma-api.polymarket.com",

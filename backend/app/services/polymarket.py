@@ -37,9 +37,13 @@ class _TTLCache:
 
 
 class PolymarketService:
-    def __init__(self, base_url: Optional[str] = None, fee_cushion: Optional[float] = None) -> None:
+    def __init__(
+        self, base_url: Optional[str] = None, fee_cushion: Optional[float] = None
+    ) -> None:
         self.base_url = base_url or settings.polymarket_base_url
-        self.fee_cushion = fee_cushion if fee_cushion is not None else settings.fee_cushion
+        self.fee_cushion = (
+            fee_cushion if fee_cushion is not None else settings.fee_cushion
+        )
         self._client = httpx.AsyncClient(
             base_url=self.base_url,
             timeout=20.0,
@@ -117,7 +121,9 @@ class PolymarketService:
             or ""
         ).strip()
         if not eid:
-            raise PolymarketAPIError("Embedded event does not contain an 'id' or 'slug'.")
+            raise PolymarketAPIError(
+                "Embedded event does not contain an 'id' or 'slug'."
+            )
         return eid, title
 
     def _parse_dt(self, value: Any) -> Optional[dt.datetime]:
@@ -140,7 +146,9 @@ class PolymarketService:
             return False
         if bool(m.get("closed")):
             return False
-        end_dt = self._parse_dt(m.get("endDate") or m.get("endDateIso") or m.get("endTime"))
+        end_dt = self._parse_dt(
+            m.get("endDate") or m.get("endDateIso") or m.get("endTime")
+        )
         if end_dt is not None:
             now = dt.datetime.now(dt.timezone.utc)
             if end_dt < now:
@@ -226,7 +234,9 @@ class PolymarketService:
             if not mkts:
                 continue
             events.append(
-                PMEvent(event_id=eid, title=titles.get(eid, ""), sport=None, markets=mkts)
+                PMEvent(
+                    event_id=eid, title=titles.get(eid, ""), sport=None, markets=mkts
+                )
             )
         return events
 

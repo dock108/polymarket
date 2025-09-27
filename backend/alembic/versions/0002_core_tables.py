@@ -35,8 +35,12 @@ def upgrade() -> None:
         sa.Column("error", sa.Text(), nullable=True),
         sa.Column("meta", sa.JSON(), nullable=True),
     )
-    op.create_index("ix_api_call_log_service_created", "api_call_log", ["service", "created_at"])
-    op.create_index("ix_api_call_log_status_created", "api_call_log", ["status_code", "created_at"])
+    op.create_index(
+        "ix_api_call_log_service_created", "api_call_log", ["service", "created_at"]
+    )
+    op.create_index(
+        "ix_api_call_log_status_created", "api_call_log", ["status_code", "created_at"]
+    )
 
     op.create_table(
         "odds_log",
@@ -56,7 +60,9 @@ def upgrade() -> None:
         sa.Column("normalized", sa.JSON(), nullable=True),
     )
     op.create_index(
-        "ix_odds_log_event_bookmaker_created", "odds_log", ["event_id", "bookmaker", "created_at"]
+        "ix_odds_log_event_bookmaker_created",
+        "odds_log",
+        ["event_id", "bookmaker", "created_at"],
     )
     op.create_index("ix_odds_log_sport_created", "odds_log", ["sport", "created_at"])
 
@@ -76,10 +82,14 @@ def upgrade() -> None:
         sa.Column("snapshot", sa.JSON(), nullable=False),
     )
     op.create_index(
-        "ix_market_snapshot_source_captured", "market_snapshot", ["source", "captured_at"]
+        "ix_market_snapshot_source_captured",
+        "market_snapshot",
+        ["source", "captured_at"],
     )
     op.create_index(
-        "ix_market_snapshot_event_captured", "market_snapshot", ["event_id", "captured_at"]
+        "ix_market_snapshot_event_captured",
+        "market_snapshot",
+        ["event_id", "captured_at"],
     )
 
 

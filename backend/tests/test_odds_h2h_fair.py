@@ -41,6 +41,10 @@ async def test_h2h_fair_annotation(monkeypatch):
         await svc.close()
 
     assert events and events[0].lines
-    fair = [l for l in events[0].lines if l.market == "h2h" and l.fair_probability is not None]
+    fair = [
+        l
+        for l in events[0].lines
+        if l.market == "h2h" and l.fair_probability is not None
+    ]
     assert len(fair) == 2
     assert 0.0 < fair[0].fair_probability < 1.0
