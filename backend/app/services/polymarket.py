@@ -67,6 +67,64 @@ class PolymarketService:
             'Unexpected /markets response format; expected list or {"markets": [...]}.'
         )
 
+    async def fetch_sports_map(self) -> Dict[str, str]:
+        cached = self._cache.get(("sports",))
+        if cached is not None:
+            return cached
+        data = await self._get("/sports")
+        tag_to_code: Dict[str, str] = {}
+        items: List[Dict[str, Any]] = []
+        if isinstance(data, list):
+            items = data
+        elif isinstance(data, dict) and isinstance(data.get("sports"), list):
+            items = data["sports"]  # type: ignore[index]
+        for s in items:
+            tid = str(
+                s.get("id")
+                or s.get("tagId")
+                or s.get("tag_id")
+                or s.get("tag")
+                or ""
+            ).strip()
+            name = str(
+                s.get("name") or s.get("key") or s.get("slug") or s.get("sport") or ""
+            ).strip()
+            if tid and name:
+                tag_to_code[tid] = self._normalize_sport_code(name)
+        self._cache.set(("sports",), tag_to_code)
+        return tag_to_code
+
+    def _normalize_sport_code(self, name: str) -> str:
+        code = name.lower().strip().replace(" ", "_").replace("-", "_")
+        return code
+
+    def _extract_tags(self, obj: Any) -> List[str]:
+        tags: List[str] = []
+        if isinstance(obj, dict):
+            for key in ("tags", "eventTags", "sportsTags"):
+                raw = obj.get(key)
+                if isinstance(raw, list):
+                    for t in raw:
+                        try:
+                            tags.append(str(t).strip())
+                        except Exception:
+                            continue
+        return tags
+
+    def _sport_code_for_market(self, m: Dict[str, Any], sports_map: Dict[str, str]) -> Optional[str]:
+        # Check market-level tags
+        for t in self._extract_tags(m):
+            if t in sports_map:
+                return sports_map[t]
+        # Check embedded event tags
+        ev_list = m.get("events")
+        if isinstance(ev_list, list) and ev_list:
+            ev0 = ev_list[0] or {}
+            for t in self._extract_tags(ev0):
+                if t in sports_map:
+                    return sports_map[t]
+        return None
+
     async def fetch_markets_paginated(
         self, page_limit: int = 500, max_pages: int = 5
     ) -> List[Dict[str, Any]]:
@@ -215,9 +273,23 @@ class PolymarketService:
         )
 
     async def fetch_events_with_binary_markets(self) -> List[PMEvent]:
+        sports_map = {}
+        try:
+            sports_map = await self.fetch_sports_map()
+        except Exception:
+            # If sports map fails, proceed without sport annotation
+            sports_map = {}
+
         markets_raw = await self.fetch_markets_paginated()
         grouped: Dict[str, List[PMMarket]] = defaultdict(list)
         titles: Dict[str, str] = {}
+        event_sport: Dict[str, Optional[str]] = {}
+
+        # Prepare allowlist set
+        allowlist_raw = settings.supported_sports_allowlist.strip()
+        allowlist: Optional[Set[str]] = None
+        if allowlist_raw:
+            allowlist = {s.strip().lower() for s in allowlist_raw.split(",") if s.strip()}
 
         for m in markets_raw:
             try:
@@ -226,17 +298,25 @@ class PolymarketService:
                 continue
             nm = self._normalize_market(m, eid)
             if nm:
+                # Determine sport for this market
+                sport_code = self._sport_code_for_market(m, sports_map)
+                if eid not in titles:
+                    titles[eid] = etitle
+                if eid not in event_sport and sport_code:
+                    event_sport[eid] = sport_code
                 grouped[eid].append(nm)
-                titles.setdefault(eid, etitle)
 
         events: List[PMEvent] = []
         for eid, mkts in grouped.items():
             if not mkts:
                 continue
+            sport = (event_sport.get(eid) or None)
+            # Apply allowlist filtering if configured
+            if allowlist is not None:
+                if (sport or "").lower() not in allowlist:
+                    continue
             events.append(
-                PMEvent(
-                    event_id=eid, title=titles.get(eid, ""), sport=None, markets=mkts
-                )
+                PMEvent(event_id=eid, title=titles.get(eid, ""), sport=sport, markets=mkts)
             )
         return events
 

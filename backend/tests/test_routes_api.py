@@ -22,12 +22,7 @@ def test_opportunities_route_ok(monkeypatch):
     class FakeEngine:
         async def fetch_opportunities(self):
             return [
-                Opportunity(
-                    id="polymarket:x",
-                    source="polymarket",
-                    title="t",
-                    ev_usd_per_share=0.1,
-                )
+                Opportunity(id="polymarket:x", source="polymarket", title="t", ev_usd_per_share=0.1)
             ]
 
     monkeypatch.setattr(opp_route_mod, "OpportunityEngine", lambda: FakeEngine())
@@ -43,12 +38,7 @@ def test_opportunities_meta_route_ok(monkeypatch):
     class FakeEngine:
         async def fetch_opportunities(self):
             return [
-                Opportunity(
-                    id="polymarket:y",
-                    source="polymarket",
-                    title="t2",
-                    ev_usd_per_share=0.0,
-                )
+                Opportunity(id="polymarket:y", source="polymarket", title="t2", ev_usd_per_share=0.0)
             ]
 
     monkeypatch.setattr(opp_route_mod, "OpportunityEngine", lambda: FakeEngine())
@@ -58,6 +48,60 @@ def test_opportunities_meta_route_ok(monkeypatch):
     assert set(payload.keys()) >= {"as_of", "staleness_seconds", "items"}
     assert isinstance(payload["items"], list) and len(payload["items"]) == 1
     assert "is_stale" in payload["items"][0]
+
+
+def test_opportunities_stale_true(monkeypatch):
+    # Make updated_at very old to force is_stale=True
+    old_ts = "2000-01-01T00:00:00+00:00"
+
+    class FakeEngine:
+        async def fetch_opportunities(self):
+            return [
+                Opportunity(
+                    id="polymarket:z",
+                    source="polymarket",
+                    title="old",
+                    ev_usd_per_share=0.0,
+                    updated_at=old_ts,
+                )
+            ]
+
+    monkeypatch.setattr(opp_route_mod, "OpportunityEngine", lambda: FakeEngine())
+    r = client.get("/api/opportunities")
+    assert r.status_code == 200
+    data = r.json()
+    assert data and data[0]["is_stale"] is True
+
+    r2 = client.get("/api/opportunities/meta")
+    assert r2.status_code == 200
+    payload = r2.json()
+    assert payload["items"][0]["is_stale"] is True
+
+
+def test_opportunities_stale_parsing_failure(monkeypatch):
+    # Provide malformed updated_at to hit exception path
+    class FakeEngine:
+        async def fetch_opportunities(self):
+            return [
+                Opportunity(
+                    id="polymarket:bad",
+                    source="polymarket",
+                    title="bad",
+                    ev_usd_per_share=0.0,
+                    updated_at="not-a-timestamp",
+                )
+            ]
+
+    monkeypatch.setattr(opp_route_mod, "OpportunityEngine", lambda: FakeEngine())
+    r = client.get("/api/opportunities")
+    assert r.status_code == 200
+    data = r.json()
+    assert data and data[0]["is_stale"] is True
+
+    r2 = client.get("/api/opportunities/meta")
+    assert r2.status_code == 200
+    payload = r2.json()
+    assert payload["items"][0]["is_stale"] is True
 
 
 def test_odds_route_404_propagates(monkeypatch):
@@ -81,11 +125,7 @@ def test_odds_route_ok(monkeypatch):
                     sport=sport,
                     event_id="e",
                     title="t",
-                    lines=[
-                        BookLine(
-                            bookmaker="a", market="h2h", side="b", american_odds=100
-                        )
-                    ],
+                    lines=[BookLine(bookmaker="a", market="h2h", side="b", american_odds=100)],
                 )
             ]
 
