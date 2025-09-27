@@ -35,9 +35,9 @@ class OpportunityEngine:
                 price = raw_price
                 if price <= 0 or p_true < 0 or p_true > 1:
                     continue
-                # EV for buying 1 share at raw price: p_true * (1 - price) - (1 - p_true) * price
-                ev_usd = p_true * (1.0 - price) - (1.0 - p_true) * price
-                ev_percent = (ev_usd / price) * 100.0 if price > 0 else None
+                # Baseline policy: Polymarket-only -> EV = 0, annotate basis
+                ev_usd = 0.0
+                ev_percent = 0.0
                 opps.append(
                     Opportunity(
                         id=f"polymarket:{m.market_id}",
@@ -50,6 +50,8 @@ class OpportunityEngine:
                         price=price,
                         ev_usd_per_share=ev_usd,
                         ev_percent=ev_percent,
+                        comparison_basis="none",
+                        comparison_sources=[],
                         updated_at=now_iso,
                     )
                 )

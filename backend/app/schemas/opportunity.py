@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class Opportunity(BaseModel):
@@ -19,6 +19,10 @@ class Opportunity(BaseModel):
     # EV
     ev_usd_per_share: Optional[float] = None  # EV in $ per 1 share (cost=price)
     ev_percent: Optional[float] = None  # EV / price if price>0
+
+    # Comparison metadata
+    comparison_basis: Optional[str] = None  # none | sportsbook_fair | datagolf | ...
+    comparison_sources: Optional[List[str]] = None  # e.g., ["pinnacle", "betfair"]
 
     # Freshness
     updated_at: Optional[str] = None
