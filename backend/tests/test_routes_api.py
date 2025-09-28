@@ -4,6 +4,7 @@ import pytest
 from app.main import app
 from app.api.routes import odds as odds_route_mod
 from app.api.routes import opportunities as opp_route_mod
+from app.api.routes import debug as debug_route_mod
 from app.schemas.odds_api import EventLines, BookLine
 from app.schemas.opportunity import Opportunity
 from app.services.odds_api import OddsAPIError
@@ -102,6 +103,21 @@ def test_opportunities_stale_parsing_failure(monkeypatch):
     assert r2.status_code == 200
     payload = r2.json()
     assert payload["items"][0]["is_stale"] is True
+
+
+def test_debug_opportunity_returns_trace(monkeypatch):
+    class FakeEngine:
+        async def fetch_opportunities(self):
+            return [
+                Opportunity(id="polymarket:debug", source="polymarket", title="T", ev_usd_per_share=0.0)
+            ]
+
+    # Patch where the debug route resolves OpportunityEngine
+    monkeypatch.setattr(debug_route_mod, "OpportunityEngine", lambda: FakeEngine())
+    r = client.get("/api/debug/opportunity/polymarket:debug")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["id"] == "polymarket:debug"
 
 
 def test_odds_route_404_propagates(monkeypatch):

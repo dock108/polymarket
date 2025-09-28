@@ -48,3 +48,5 @@ async def test_h2h_fair_annotation(monkeypatch):
     ]
     assert len(fair) == 2
     assert 0.0 < fair[0].fair_probability < 1.0
+    assert events[0].canonical_event_key is not None
+    assert events[0].selected_bookmaker is not None

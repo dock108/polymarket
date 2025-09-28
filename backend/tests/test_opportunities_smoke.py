@@ -24,5 +24,7 @@ async def test_first_nonzero_and_positive_ev(capsys):
     print("First non-zero EV:", first_nonzero.model_dump() if first_nonzero else None)
     print("First positive EV:", first_positive.model_dump() if first_positive else None)
 
-    # Don't make this test brittle; just require that we fetched opportunities
+    # Ensure shape
     assert isinstance(opps, list)
+    if opps:
+        assert opps[0].canonical_event_key is not None

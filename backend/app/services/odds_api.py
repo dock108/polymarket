@@ -9,6 +9,7 @@ from app.core.config import settings
 from app.schemas.odds_api import BookLine, EventLines
 from app.utils.odds import american_to_decimal
 from app.services._http import http_get_with_retry
+from app.utils.canonical import canonical_event_key
 
 
 class OddsAPIError(RuntimeError):
@@ -105,11 +106,10 @@ class OddsAPIService:
             eid = str(
                 ev.get("id") or ev.get("event_id") or ev.get("commence_time") or ""
             )
-            title = str(ev.get("home_team") or ev.get("title") or "")
             lines: List[BookLine] = []
             bookmakers = ev.get("bookmakers") or []
 
-            per_side_h2h: Dict[str, int] = {}
+            per_side_h2h: Dict[str, Tuple[str, int]] = {}
 
             for book in bookmakers:
                 bkey = str(book.get("key") or book.get("title") or "")
@@ -137,10 +137,10 @@ class OddsAPIService:
                             continue
                         if mk_key == "h2h":
                             if side not in per_side_h2h:
-                                per_side_h2h[side] = american
+                                per_side_h2h[side] = (bkey, american)
                             else:
-                                current = per_side_h2h[side]
-                                pick = american
+                                current_b, current = per_side_h2h[side]
+                                pick_b, pick = current_b, current
                                 if (
                                     (
                                         american < 0
@@ -154,8 +154,8 @@ class OddsAPIService:
                                     )
                                     or (american < 0 and current > 0)
                                 ):
-                                    pick = american
-                                per_side_h2h[side] = pick
+                                    pick_b, pick = bkey, american
+                                per_side_h2h[side] = (pick_b, pick)
                         lines.append(
                             BookLine(
                                 bookmaker=bkey,
@@ -167,9 +167,14 @@ class OddsAPIService:
                             )
                         )
 
+            selected_bookmaker: Optional[str] = None
+            event_title: str = str(ev.get("title") or ev.get("home_team") or "")
             if len(per_side_h2h) == 2:
                 sides = list(per_side_h2h.keys())
-                a_1, a_2 = per_side_h2h[sides[0]], per_side_h2h[sides[1]]
+                (b1, a_1), (b2, a_2) = per_side_h2h[sides[0]], per_side_h2h[sides[1]]
+                selected_bookmaker = f"{b1}|{b2}"
+                # Always construct a canonical H2H title from sides to ensure join alignment
+                event_title = f"{sides[0]} vs {sides[1]}"
 
                 def implied_from_american(a: int) -> float:
                     dec = american_to_decimal(a)
@@ -190,7 +195,14 @@ class OddsAPIService:
                         bl.fair_decimal_odds = (1.0 / f2) if f2 > 0 else None
 
             results.append(
-                EventLines(sport=sport_key, event_id=eid, title=title, lines=lines)
+                EventLines(
+                    sport=sport_key,
+                    event_id=eid,
+                    title=event_title,
+                    lines=lines,
+                    canonical_event_key=canonical_event_key(sport_key, event_title),
+                    selected_bookmaker=selected_bookmaker,
+                )
             )
 
         self._cache.set(cache_key, results)

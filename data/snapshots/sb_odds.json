@@ -1,0 +1,14 @@
+[
+  {
+    "id": "sb_e1",
+    "home_team": "Team A",
+    "bookmakers": [
+      {
+        "key": "bk",
+        "markets": [
+          {"key": "h2h", "outcomes": [{"name": "Team A", "price": 140}, {"name": "Team B", "price": -160}]}
+        ]
+      }
+    ]
+  }
+]

@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from app.schemas.opportunity import Opportunity
 from app.services.opportunities import OpportunityEngine
 from app.core.config import settings
+from app.services.polymarket import PolymarketService
 
 router = APIRouter()
 
@@ -60,3 +61,13 @@ async def get_opportunities_with_meta() -> Dict[str, Any]:
         "staleness_seconds": threshold_seconds,
         "items": enriched,
     }
+
+
+@router.get("/api/raw/polymarket")
+async def get_raw_polymarket() -> Dict[str, Any]:
+    svc = PolymarketService()
+    try:
+        raw_markets = await svc.fetch_markets_paginated()
+    finally:
+        await svc.close()
+    return {"count": len(raw_markets), "markets": raw_markets}

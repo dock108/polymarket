@@ -7,9 +7,12 @@ struct Opportunity: Codable, Identifiable {
     let sport: String?
     let event_id: String?
     let market_id: String?
+    let canonical_event_key: String?
     let yes_probability: Double?
     let price: Double?
     let ev_usd_per_share: Double?
     let ev_percent: Double?
+    let comparison_basis: String?
     let updated_at: String?
+    let is_stale: Bool?
 }

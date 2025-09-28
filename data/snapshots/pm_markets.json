@@ -1,0 +1,13 @@
+[
+  {
+    "id": "m1",
+    "question": "Will Team A win?",
+    "closed": false,
+    "tags": ["tag1"],
+    "events": [{"id": "e1", "title": "Team A vs Team B"}],
+    "outcomes": [
+      {"name": "Yes", "price": 0.55},
+      {"name": "No", "price": 0.45}
+    ]
+  }
+]

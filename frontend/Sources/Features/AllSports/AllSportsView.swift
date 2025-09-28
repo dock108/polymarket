@@ -21,37 +21,39 @@ struct AllSportsView: View {
                     List(vm.filteredSorted) { opp in
                         NavigationLink(destination: BetDetailView(opportunity: opp)) {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(opp.title).font(.headline)
                                 HStack {
-                                    if let ev = opp.ev_percent {
-                                        Text(String(format: "EV %%: %.2f", ev * 100))
-                                    }
-                                    if let price = opp.price {
-                                        Text(String(format: "Price: %.3f", price))
-                                    }
-                                    if let prob = opp.yes_probability {
-                                        Text(String(format: "P_yes: %.3f", prob))
+                                    Text(opp.title).font(.headline)
+                                    if let basis = opp.comparison_basis, basis == "none" {
+                                        Text("No comparison")
+                                            .font(.caption2)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(Color.gray.opacity(0.2))
+                                            .cornerRadius(4)
+                                    } else if let basis = opp.comparison_basis {
+                                        Text(basis)
+                                            .font(.caption2)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(Color.blue.opacity(0.15))
+                                            .cornerRadius(4)
                                     }
                                 }
-                                .font(.subheadline)
+                                HStack(spacing: 10) {
+                                    if let sport = opp.sport { Text(sport).font(.caption).foregroundColor(.secondary) }
+                                    if let ev = opp.ev_percent { Text(String(format: "EV %%: %.2f", ev)).font(.subheadline) }
+                                    if let price = opp.price { Text(String(format: "Price: %.3f", price)).font(.subheadline) }
+                                    if let prob = opp.yes_probability { Text(String(format: "P_yes: %.3f", prob)).font(.subheadline) }
+                                    if let stale = opp.is_stale, stale {
+                                        Text("Stale")
+                                            .font(.caption2)
+                                            .foregroundColor(.orange)
+                                    }
+                                }
                                 .foregroundColor(.secondary)
 
                                 if settings.developerMode {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        HStack {
-                                            Text("Sport:")
-                                            Text(opp.sport ?? "-")
-                                        }
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-
-                                        HStack {
-                                            Text("Source:")
-                                            Text(opp.source)
-                                        }
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-
                                         HStack {
                                             Text("IDs:")
                                             Text("event=\(opp.event_id ?? "-") market=\(opp.market_id ?? "-")")

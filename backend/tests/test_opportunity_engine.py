@@ -10,7 +10,7 @@ class FakePMService:
             PMEvent(
                 event_id="e1",
                 title="A",
-                sport=None,
+                sport="basketball_nba",
                 markets=[
                     PMMarket(
                         market_id="m1",
@@ -26,7 +26,7 @@ class FakePMService:
             PMEvent(
                 event_id="e2",
                 title="B",
-                sport=None,
+                sport="basketball_nba",
                 markets=[
                     PMMarket(
                         market_id="m2",

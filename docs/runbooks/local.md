@@ -10,12 +10,16 @@ pip install -r requirements.txt
 2. Configure environment
 ```bash
 cp ../.env.example ../.env
-# edit values as needed
+# edit values as needed (ODDS_API_KEY required for sportsbook join)
 ```
 3. Run API
 ```bash
 ./dev.sh
 # http://localhost:8000/health
+# http://localhost:8000/api/opportunities
+# http://localhost:8000/api/opportunities/meta
+# http://localhost:8000/api/odds/{sport}
+# http://localhost:8000/api/debug/opportunity/{id}
 ```
 
 ## iOS App
@@ -33,5 +37,5 @@ open PolymarketEdge.xcodeproj
 ```bash
 cd backend
 source .venv/bin/activate
-pytest -q
+pytest --cov=app --cov-report=term-missing -q
 ```

@@ -20,3 +20,8 @@ class EventLines(BaseModel):
     event_id: str
     title: str
     lines: List[BookLine]
+    # Join helpers and attribution
+    canonical_event_key: Optional[str] = None
+    home_team_key: Optional[str] = None
+    away_team_key: Optional[str] = None
+    selected_bookmaker: Optional[str] = None  # chosen for conservative H2H

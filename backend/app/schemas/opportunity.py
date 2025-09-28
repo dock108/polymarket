@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 
 class Opportunity(BaseModel):
@@ -28,6 +28,11 @@ class Opportunity(BaseModel):
     # Comparison metadata
     comparison_basis: Optional[str] = None  # none | sportsbook_fair | datagolf | ...
     comparison_sources: Optional[List[str]] = None  # e.g., ["pinnacle", "betfair"]
+
+    # Provenance and trace (compact)
+    source_attribution: Optional[Dict[str, Any]] = None
+    inputs: Optional[Dict[str, Any]] = None
+    calc_notes: Optional[str] = None
 
     # Freshness
     updated_at: Optional[str] = None
