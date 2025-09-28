@@ -162,7 +162,7 @@ class PolymarketService:
         self._cache.set(cache_key, all_markets)
         return all_markets
 
-    def _extract_event_info(self, m: Dict[str, Any]) -> tuple[str, str]:
+    def _extract_event_info(self, m: Dict[str, Any]) -> tuple[str, str, Optional[str], Optional[str]]:
         ev_list = m.get("events")
         if not isinstance(ev_list, list) or not ev_list:
             raise PolymarketAPIError(
@@ -178,11 +178,13 @@ class PolymarketService:
             or m.get("question")
             or ""
         ).strip()
+        ticker = str(ev0.get("ticker") or "").strip() or None
+        eslug = str(ev0.get("slug") or "").strip() or None
         if not eid:
             raise PolymarketAPIError(
                 "Embedded event does not contain an 'id' or 'slug'."
             )
-        return eid, title
+        return eid, title, ticker, eslug
 
     def _parse_dt(self, value: Any) -> Optional[dt.datetime]:
         if value is None:
@@ -269,6 +271,7 @@ class PolymarketService:
             market_id=str(m.get("id") or m.get("marketId") or m.get("slug") or ""),
             event_id=event_id,
             question=str(m.get("question") or m.get("title") or m.get("name") or ""),
+            slug=str(m.get("slug") or "") or None,
             outcomes=outcomes,
         )
 
@@ -277,15 +280,15 @@ class PolymarketService:
         try:
             sports_map = await self.fetch_sports_map()
         except Exception:
-            # If sports map fails, proceed without sport annotation
             sports_map = {}
 
         markets_raw = await self.fetch_markets_paginated()
         grouped: Dict[str, List[PMMarket]] = defaultdict(list)
         titles: Dict[str, str] = {}
         event_sport: Dict[str, Optional[str]] = {}
+        event_ticker: Dict[str, Optional[str]] = {}
+        event_slug: Dict[str, Optional[str]] = {}
 
-        # Prepare allowlist set
         allowlist_raw = settings.supported_sports_allowlist.strip()
         allowlist: Optional[Set[str]] = None
         if allowlist_raw:
@@ -293,15 +296,15 @@ class PolymarketService:
 
         for m in markets_raw:
             try:
-                eid, etitle = self._extract_event_info(m)
+                eid, etitle, eticker, eslug = self._extract_event_info(m)
             except PolymarketAPIError:
                 continue
             nm = self._normalize_market(m, eid)
             if nm:
-                # Determine sport for this market
                 sport_code = self._sport_code_for_market(m, sports_map)
-                if eid not in titles:
-                    titles[eid] = etitle
+                titles.setdefault(eid, etitle)
+                event_ticker.setdefault(eid, eticker)
+                event_slug.setdefault(eid, eslug)
                 if eid not in event_sport and sport_code:
                     event_sport[eid] = sport_code
                 grouped[eid].append(nm)
@@ -311,12 +314,17 @@ class PolymarketService:
             if not mkts:
                 continue
             sport = (event_sport.get(eid) or None)
-            # Apply allowlist filtering if configured
-            if allowlist is not None:
-                if (sport or "").lower() not in allowlist:
-                    continue
+            if allowlist is not None and (sport or "").lower() not in allowlist:
+                continue
             events.append(
-                PMEvent(event_id=eid, title=titles.get(eid, ""), sport=sport, markets=mkts)
+                PMEvent(
+                    event_id=eid,
+                    title=titles.get(eid, ""),
+                    sport=sport,
+                    ticker=event_ticker.get(eid),
+                    slug=event_slug.get(eid),
+                    markets=mkts,
+                )
             )
         return events
 

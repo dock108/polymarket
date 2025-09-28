@@ -8,10 +8,11 @@ from app.services.polymarket import PolymarketService
 from app.services.odds_api import OddsAPIService, OddsAPIError
 from app.core.config import settings
 from app.utils.canonical import canonical_event_key
+from app.utils.sports_config import infer_league_from_fields, infer_team_keys
 
 
 class OpportunityEngine:
-    async def fetch_opportunities(self) -> List[Opportunity]:
+    async def fetch_opportunities(self, include_non_sports: bool = False) -> List[Opportunity]:
         # Fetch PM
         pm = PolymarketService()
         try:
@@ -48,9 +49,17 @@ class OpportunityEngine:
         now_iso = datetime.now(timezone.utc).isoformat()
         opps: List[Opportunity] = []
         for ev in events:
-            if ev.sport is None:
-                # Filter out non-sports for opportunities
+            league_code = ev.sport
+            if not league_code:
+                league_code = infer_league_from_fields(
+                    question=" ".join(m.question for m in ev.markets),
+                    title=ev.title,
+                    ticker=ev.ticker,
+                )
+            if not include_non_sports and not league_code:
+                # Filter out if still not identified as sports
                 continue
+
             for m in ev.markets:
                 yes = next((o for o in m.outcomes if o.name.lower() == "yes"), None)
                 no = next((o for o in m.outcomes if o.name.lower() == "no"), None)
@@ -66,7 +75,7 @@ class OpportunityEngine:
                 if price <= 0 or p_true_pm < 0 or p_true_pm > 1:
                     continue
 
-                ce_key = canonical_event_key(ev.sport, ev.title)
+                ce_key = canonical_event_key(league_code, ev.title)
                 ev_usd = 0.0
                 ev_percent = 0.0
                 basis = "none"
@@ -91,7 +100,7 @@ class OpportunityEngine:
                         id=f"polymarket:{m.market_id}",
                         source="polymarket",
                         title=m.question,
-                        sport=ev.sport,
+                        sport=league_code,
                         event_id=ev.event_id,
                         market_id=m.market_id,
                         canonical_event_key=ce_key,

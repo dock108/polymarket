@@ -13,6 +13,7 @@ class PMMarket(BaseModel):
     market_id: str
     event_id: Optional[str] = None
     question: str
+    slug: Optional[str] = None
     outcomes: List[PMOutcome]
 
 
@@ -20,4 +21,6 @@ class PMEvent(BaseModel):
     event_id: str
     sport: Optional[str] = None
     title: str
+    ticker: Optional[str] = None
+    slug: Optional[str] = None
     markets: List[PMMarket] = []

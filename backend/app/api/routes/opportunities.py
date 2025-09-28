@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from typing import List, Dict, Any
 from datetime import datetime, timezone
 
@@ -13,9 +13,13 @@ router = APIRouter()
 
 
 @router.get("/api/opportunities", response_model=List[Opportunity])
-async def get_opportunities() -> List[Opportunity]:
+async def get_opportunities(include_non_sports: bool = Query(False)) -> List[Opportunity]:
     eng = OpportunityEngine()
-    items: List[Opportunity] = await eng.fetch_opportunities()
+    try:
+        items: List[Opportunity] = await eng.fetch_opportunities(include_non_sports=include_non_sports)
+    except TypeError:
+        # Backward-compat for test fakes without the kwarg
+        items = await eng.fetch_opportunities()  # type: ignore[misc]
 
     # Compute staleness per item (additive field) without changing top-level shape
     as_of = datetime.now(timezone.utc)
