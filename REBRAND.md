@@ -1,8 +1,3 @@
-Absolutely — here’s a single self-contained Markdown document you can drop right into your repo (e.g. architecture.md).
-
-⸻
-
-
 # Polymarket + Sportsbook Edge Detection Architecture
 
 This system continuously ingests live and historical data from **Polymarket** and **TheOddsAPI**, stores hourly snapshots, converts Polymarket data into sportsbook-compatible structures, and eventually trains an ML model to confirm whether Polymarket offers a superior price after accounting for fees and slippage.
@@ -286,8 +281,3 @@ Alerts	Slack / Email / Webhooks
 	7.	Add trader bot for simulated or real execution.
 
 ⸻
-
-
----  
-
-Would you like me to add **Postgres schema definitions** for those key tables (markets, order_books_hourly_snapshots, oddsapi_live, etc.) to append at the bottom of this markdown?
