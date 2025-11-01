@@ -14,55 +14,62 @@ This system continuously ingests live and historical data from Polymarket and Th
 
 ```mermaid
 flowchart LR
-  subgraph SRC[Data Sources]
-    PM[Polymarket Markets and Order Books]
-    OA[TheOddsAPI Sportsbook Lines (live)]
-    OAH[TheOddsAPI Historical Lines]
+  %% ===== DATA SOURCES =====
+  subgraph SRC["Data Sources"]
+    PM["Polymarket Markets and Order Books"]
+    OA["TheOddsAPI Sportsbook Live Lines"]
+    OAH["TheOddsAPI Historical Lines"]
   end
 
-  subgraph ORCH[Orchestration & Workers]
-    AF[Scheduler / Orchestrator (Airflow or Celery)]
-    W1[Ingest Worker: Polymarket]
-    W2[Ingest Worker: OddsAPI Live]
-    W3[Ingest Worker: OddsAPI Historical]
-    W4[ETL & Schema Mapper (PM to Sportsbook layout)]
-    W5[Feature Builder]
-    W6[Model Trainer]
-    W7[Comparator & Signals]
+  %% ===== ORCHESTRATION =====
+  subgraph ORCH["Orchestration and Workers"]
+    AF["Scheduler or Orchestrator"]
+    W1["Ingest Worker - Polymarket"]
+    W2["Ingest Worker - OddsAPI Live"]
+    W3["Ingest Worker - OddsAPI Historical"]
+    W4["ETL and Schema Mapper (Polymarket to Sportsbook)"]
+    W5["Feature Builder"]
+    W6["Model Trainer"]
+    W7["Comparator and Signals"]
   end
 
-  subgraph STG[Storage]
-    subgraph OLTP[Operational DB (Postgres or Timescale)]
-      DBM[markets]
-      DBOB[order_books_hourly_snapshots]
-      DBOAL[oddsapi_live]
-      DBOAH[oddsapi_historical_hourly]
-      MAP[market_mappings and team_aliases]
-      FEAT[features_latest]
-      SIG[signals]
-      EXEC[executions and fills]
-      COST[cost_models and fee_tables]
+  %% ===== STORAGE =====
+  subgraph STG["Storage"]
+    subgraph OLTP["Operational Database"]
+      DBM["markets"]
+      DBOB["order_books_hourly_snapshots"]
+      DBOAL["oddsapi_live"]
+      DBOAH["oddsapi_historical_hourly"]
+      MAP["market_mappings and team_aliases"]
+      FEAT["features_latest"]
+      SIG["signals"]
+      EXEC["executions and fills"]
+      COST["cost_models and fee_tables"]
     end
-    subgraph DL[Data Lake (S3 or GCS)]
-      RAW[raw parquet data (pm, oddsapi, snapshots)]
-      TRAIN[ml training sets]
-      MODELS[ml models and metrics]
+
+    subgraph DL["Data Lake"]
+      RAW["raw parquet data"]
+      TRAIN["ml training sets"]
+      MODELS["ml models and metrics"]
     end
-    FS[Feature Store (DuckDB or Feast)]
+
+    FS["Feature Store"]
   end
 
-  subgraph SVC[Serving & Ops]
-    API[Model and Comparator API]
-    UI[Ops UI / Dashboards (Streamlit or Grafana)]
-    ALERT[Alerting (Slack or Email)]
-    BOT[Trader Bot (optional)]
-    MON[Monitoring and Logs (Prometheus or ELK)]
+  %% ===== SERVING =====
+  subgraph SVC["Serving and Ops"]
+    API["Model and Comparator API"]
+    UI["Ops Dashboard"]
+    ALERT["Alerting"]
+    BOT["Trader Bot (optional)"]
+    MON["Monitoring and Logs"]
   end
 
-  PM -->|markets poll| W1
-  PM -->|order book 1h snapshot| W1
-  OA -->|live odds poll| W2
-  OAH -->|hourly backfill| W3
+  %% ===== FLOWS =====
+  PM -->|Markets Poll| W1
+  PM -->|Order Book Snapshots| W1
+  OA -->|Live Odds Poll| W2
+  OAH -->|Hourly Backfill| W3
 
   W1 --> RAW
   W1 --> DBM
