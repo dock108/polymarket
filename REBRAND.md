@@ -105,12 +105,12 @@ flowchart LR
   ORCH --> MON
   STG --> MON
   SVC --> MON
-
+```
 
 ⸻
 
-🔁 Dataflow / Handshakes
-
+## 🔁 Dataflow / Handshakes
+```mermaid
 sequenceDiagram
   autonumber
   participant Sch as Scheduler
@@ -164,12 +164,12 @@ sequenceDiagram
     CMP->>COST: Apply fees and slippage
     CMP-->>AL: Send alert if EV threshold met
   end
-
-
+```
 ⸻
 
-⏱ Scheduling & Cadence
+## ⏱ Scheduling & Cadence
 
+```mermaid
 gantt
   dateFormat  HH:mm
   title Ingestion and Pipeline Cadence
@@ -186,22 +186,22 @@ gantt
   Nightly train/eval            :mt1, 23:00, 01:00
   section Compare & Signals
   Edge calc (rolling 1–2m)      :cmp1, 00:00, 00:10
-
-
-⸻
-
-🧠 Implementation Notes
-	•	Entity mapping: map team and event IDs to align Polymarket vs sportsbook.
-	•	Cost model: store fees, slippage, fill probabilities, and minimum liquidity.
-	•	Snapshots: hourly order books and historical odds to study trends.
-	•	Features: price deltas, drift, volatility, mean reversion.
-	•	Model: after 2–3 months, train a classifier + regression combo to confirm edges.
-	•	Comparator: trigger only when model and Polymarket both show edge after costs.
-	•	Monitoring: Grafana + Prometheus for data freshness and failures, Slack alerts for new edge detections.
+```
 
 ⸻
 
-🧩 Tech Stack Summary
+## 🧠 Implementation Notes
+	- Entity mapping: map team and event IDs to align Polymarket vs sportsbook.
+	- Cost model: store fees, slippage, fill probabilities, and minimum liquidity.
+	- Snapshots: hourly order books and historical odds to study trends.
+	- Features: price deltas, drift, volatility, mean reversion.
+	- Model: after 2–3 months, train a classifier + regression combo to confirm edges.
+	- Comparator: trigger only when model and Polymarket both show edge after costs.
+	- Monitoring: Grafana + Prometheus for data freshness and failures, Slack alerts for new edge detections.
+
+⸻
+
+## 🧩 Tech Stack Summary
 
 Layer	Tools
 Ingestion	Python (Celery / Airflow)
